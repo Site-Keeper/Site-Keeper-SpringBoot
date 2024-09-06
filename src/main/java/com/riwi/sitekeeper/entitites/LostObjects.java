@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Getter
 @ToString
-public class lost_objects {
+public class LostObjects {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
