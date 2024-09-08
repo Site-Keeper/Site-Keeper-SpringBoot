@@ -15,18 +15,22 @@ public class ObjectService {
     private ObjectRepository objectRepository;
 
     public List<ObjectEntity> getAllObjects() {
+
         return objectRepository.findAll();
     }
 
     public Optional<ObjectEntity> getObjectById(Long id) {
+
         return objectRepository.findById(id);
     }
 
     public ObjectEntity createObject(ObjectEntity objectEntity) {
+
         return objectRepository.save(objectEntity);
     }
 
     public void deleteObject(Long id) {
+
         objectRepository.deleteById(id);
     }
 
