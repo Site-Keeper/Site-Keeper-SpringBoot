@@ -28,6 +28,6 @@ public class ObjectEntity {
     String image;
 
     @Column(name = "space_id", nullable = false)
-    Long spaceId;
+    SpaceEntity spaceId;
 
 }

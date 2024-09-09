@@ -32,10 +32,13 @@ public class ReportEntity {
     private String image;
 
     @Column(nullable = false)
+    private TopicEntity topicId;
+
+    @Column(nullable = false)
     private LocalDateTime theDate;
 
     @Column(nullable = false)
-    private SpaceEntity space;
+    private SpaceEntity spaceId;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
