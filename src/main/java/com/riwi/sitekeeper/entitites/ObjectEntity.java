@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "objects")
 public class ObjectEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
