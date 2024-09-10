@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @Getter
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "objects")
 public class ObjectEntity {
@@ -17,18 +16,18 @@ public class ObjectEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "description", nullable = false)
-    String description;
+    private String description;
 
     @Column(name = "image", nullable = false)
-    String image;
+    private String image;
 
     @Column(name = "space_id", nullable = false)
-    Long spaceId;
+    private SpaceEntity spaceId;
 
 }

@@ -31,6 +31,7 @@ public class ObjectService {
 
     public void deleteObject(Long id) {
 
+
         objectRepository.deleteById(id);
     }
 

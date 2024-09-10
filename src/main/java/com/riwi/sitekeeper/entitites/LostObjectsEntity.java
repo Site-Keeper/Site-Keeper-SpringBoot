@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Getter
 @ToString
-public class LostObjects {
+public class LostObjectsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,5 +22,5 @@ public class LostObjects {
 
     @ManyToOne
     @Column(nullable = false)
-    private Long Space_id;
+    private SpaceEntity spaceId;
 }
