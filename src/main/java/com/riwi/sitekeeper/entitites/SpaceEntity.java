@@ -7,12 +7,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "spaces")
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity(name = "spaces")
 public class SpaceEntity {
 
     @Id
