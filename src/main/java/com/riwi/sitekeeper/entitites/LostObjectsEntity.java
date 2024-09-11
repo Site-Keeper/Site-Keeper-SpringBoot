@@ -10,17 +10,22 @@ import lombok.*;
 @Getter
 @ToString
 public class LostObjectsEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String name;
+
     @Column(nullable = false)
     private String description;
+
     @Column(nullable = false)
     private String image;
 
     @ManyToOne
     @Column(nullable = false)
     private SpaceEntity spaceId;
+
 }
