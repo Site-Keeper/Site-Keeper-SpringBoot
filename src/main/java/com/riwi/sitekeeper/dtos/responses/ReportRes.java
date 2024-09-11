@@ -2,15 +2,13 @@ package com.riwi.sitekeeper.dtos.responses;
 
 import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.entitites.TopicEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportRes {
