@@ -1,0 +1,61 @@
+# Ignore target directory (build output)
+target/
+
+# Ignore Maven or Gradle specific files
+**/logs/
+**/*.log
+*.swp
+.gradle/
+build/
+out/
+
+# Ignore IDE-specific files
+# IntelliJ
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+
+# Ignore test output
+test-output/
+test-results/
+
+# Ignore application properties (sensitive information)
+src/main/resources/application.properties
+src/main/resources/application.yml
+
+# Lombok generated files
+.lombok/
+
+# Ignore .env files
+.env
+
+# Ignore spring boot devtools
+spring-boot-devtools.jar
+
+# Ignore JRebel temp files
+.rebel/
+
+# Ignore other binary files
+*.class
+*.jar
+*.war
+*.ear

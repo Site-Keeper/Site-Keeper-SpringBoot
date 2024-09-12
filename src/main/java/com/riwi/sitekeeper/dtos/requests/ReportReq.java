@@ -1,7 +1,6 @@
 package com.riwi.sitekeeper.dtos.requests;
 
 import com.riwi.sitekeeper.entitites.SpaceEntity;
-import com.riwi.sitekeeper.entitites.TopicEntity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +28,7 @@ public class ReportReq {
     private String image;
 
     @NotBlank(message = "Topic is required")
-    private TopicEntity topicId;
+    private Long topicId;
 
     @NotBlank(message = "The Date is required")
     private LocalDateTime theDate;

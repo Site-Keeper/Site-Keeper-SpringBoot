@@ -1,7 +1,6 @@
 package com.riwi.sitekeeper.dtos.responses;
 
 import com.riwi.sitekeeper.entitites.SpaceEntity;
-import com.riwi.sitekeeper.entitites.TopicEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ public class ReportRes {
 
     private String image;
 
-    private TopicEntity topicId;
+    private Long topicId;
 
     private LocalDateTime theDate;
 
