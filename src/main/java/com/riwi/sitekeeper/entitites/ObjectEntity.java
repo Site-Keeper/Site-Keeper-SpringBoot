@@ -3,6 +3,7 @@ package com.riwi.sitekeeper.entitites;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,7 +12,9 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Entity
 @Table(name = "objects")
+@EntityListeners(AuditingEntityListener.class)
 public class ObjectEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +29,8 @@ public class ObjectEntity {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "space_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "space_id", nullable = false)
     private SpaceEntity spaceId;
 
 }
