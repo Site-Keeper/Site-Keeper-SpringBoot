@@ -2,13 +2,16 @@ package com.riwi.sitekeeper.entitites;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@Table(name = "lost_objects")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @ToString
+@EntityListeners(AuditingEntityListener.class)
 public class LostObjectsEntity {
 
     @Id
@@ -25,7 +28,7 @@ public class LostObjectsEntity {
     private String image;
 
     @ManyToOne
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     private SpaceEntity spaceId;
 
 }
