@@ -1,18 +1,22 @@
 package com.riwi.sitekeeper.entitites;
 
+import com.riwi.sitekeeper.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "reports")
+@Entity
+@Table(name = "reports")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class ReportEntity {
 
     @Id
@@ -32,12 +36,19 @@ public class ReportEntity {
     private String image;
 
     @Column(nullable = false)
-    private TopicEntity topicId;
+    private ReportStatus status;
 
     @Column(nullable = false)
     private LocalDateTime theDate;
 
     @Column(nullable = false)
+    private Long topicId;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "space_id",nullable = false)
     private SpaceEntity spaceId;
 
     @CreatedDate
