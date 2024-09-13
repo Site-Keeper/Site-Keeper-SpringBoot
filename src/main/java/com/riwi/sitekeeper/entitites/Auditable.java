@@ -5,6 +5,7 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -28,4 +29,9 @@ public abstract class Auditable {
 
     @Column(nullable = false)
     private Long updatedBy;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean isDeleted;
+
 }
