@@ -1,4 +1,4 @@
-package com.riwi.sitekeeper.controllers;
+package com.riwi.sitekeeper.controllers.impl;
 
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
