@@ -49,4 +49,5 @@ public class SpaceController {
         Optional<SpaceEntity> space = spaceService.getById(id);
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
- }
+
+}
