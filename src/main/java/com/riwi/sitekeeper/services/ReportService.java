@@ -7,9 +7,9 @@ import com.riwi.sitekeeper.repositories.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -19,14 +19,16 @@ public class ReportService {
 
     public List<ReportRes> getAllReports() {
         List<ReportEntity> reports = reportRepository.findAll();
-        return reports.stream()
-                .map(this::convertToReportRes)
-                .collect(Collectors.toList());
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            reportResList.add(convertToReportRes(report));
+        }
+        return reportResList;
     }
 
     public Optional<ReportRes> getReportById(Long id) {
-        return reportRepository.findById(id)
-                .map(this::convertToReportRes);
+        Optional<ReportEntity> reportOptional = reportRepository.findById(id);
+        return reportOptional.map(this::convertToReportRes);
     }
 
     public ReportRes createReport(ReportReq report) {

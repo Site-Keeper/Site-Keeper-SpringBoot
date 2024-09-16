@@ -1,13 +1,13 @@
 package com.riwi.sitekeeper.services;
 
+import com.riwi.sitekeeper.dtos.requests.SpaceReq;
+import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.repositories.SpaceRepository;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,36 +15,68 @@ import java.util.Optional;
 public class SpaceService {
 
     @Autowired
-    SpaceRepository spaceRepository;
+    private SpaceRepository spaceRepository;
 
-    public SpaceEntity create (SpaceEntity space){
-        SpaceEntity newSpace = new SpaceEntity();
-        newSpace.setName(space.getName());
-        newSpace.setLocation(space.getLocation());
-        newSpace.setDescription(space.getDescription());
-        newSpace.setImage(space.getImage());
-        newSpace.setCreatedAt(LocalDateTime.now());
-        newSpace.setUpdatedAt(LocalDateTime.now());
-        return spaceRepository.save(newSpace);
+    public List<SpaceRes> getAllSpaces() {
+        List<SpaceEntity> spaces = spaceRepository.findAll();
+        List<SpaceRes> spaceResList = new ArrayList<>();
+        for (SpaceEntity space : spaces) {
+            spaceResList.add(convertToSpaceRes(space));
+        }
+        return spaceResList;
     }
 
-    public SpaceEntity update(SpaceEntity space){
-        SpaceEntity updatedSpace = new SpaceEntity();
-        updatedSpace.setId(space.getId());
-        updatedSpace.setName(space.getName());
-        updatedSpace.setLocation(space.getLocation());
-        updatedSpace.setDescription(space.getDescription());
-        updatedSpace.setImage(space.getImage());
-        updatedSpace.setCreatedAt(space.getCreatedAt());
-        updatedSpace.setUpdatedAt(LocalDateTime.now());
-        return spaceRepository.save(space);
+    public Optional<SpaceRes> getSpaceById(Long id) {
+        Optional<SpaceEntity> spaceOptional = spaceRepository.findById(id);
+        return spaceOptional.map(this::convertToSpaceRes);
     }
 
-    public List<SpaceEntity> getAll(){
-        return spaceRepository.findAll();
+    public SpaceRes createSpace(SpaceReq space) {
+        SpaceEntity newSpace = convertToSpaceEntity(space);
+        SpaceEntity savedSpace = spaceRepository.save(newSpace);
+        return convertToSpaceRes(savedSpace);
     }
 
-    public Optional<SpaceEntity> getById(Long id){
-        return spaceRepository.findById(id);
+    public SpaceRes updateSpace(Long id, SpaceReq updatedSpace) {
+        Optional<SpaceEntity> existingSpaceOptional = spaceRepository.findById(id);
+
+        if (existingSpaceOptional.isPresent()) {
+            SpaceEntity existingSpace = existingSpaceOptional.get();
+            updateSpaceEntity(existingSpace, updatedSpace);
+            SpaceEntity savedSpace = spaceRepository.save(existingSpace);
+            return convertToSpaceRes(savedSpace);
+        } else {
+            throw new RuntimeException("Space not found with id: " + id);
+        }
+    }
+
+    public void deleteSpace(Long id) {
+        spaceRepository.deleteById(id);
+    }
+
+    private SpaceEntity convertToSpaceEntity(SpaceReq spaceReq) {
+        return SpaceEntity.builder()
+                .name(spaceReq.getName())
+                .location(spaceReq.getLocation())
+                .description(spaceReq.getDescription())
+                .image(spaceReq.getImage())
+                .build();
+    }
+
+    private SpaceRes convertToSpaceRes(SpaceEntity spaceEntity) {
+        return SpaceRes.builder()
+                .id(spaceEntity.getId())
+                .name(spaceEntity.getName())
+                .location(spaceEntity.getLocation())
+                .description(spaceEntity.getDescription())
+                .image(spaceEntity.getImage())
+                .build();
+    }
+
+    private void updateSpaceEntity(SpaceEntity existingSpace, SpaceReq updatedSpace) {
+        existingSpace.setName(updatedSpace.getName());
+        existingSpace.setLocation(updatedSpace.getLocation());
+        existingSpace.setDescription(updatedSpace.getDescription());
+        existingSpace.setImage(updatedSpace.getImage());
     }
 }
