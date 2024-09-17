@@ -8,6 +8,7 @@ import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.services.SpaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/space")
+@Tag(name = "Spaces", description = "Spaces Controller")
 public class SpaceController {
 
     @Autowired
