@@ -72,11 +72,18 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.cloudinary/cloudinary-core -->
+		<!-- Cloudinary -->
 		<dependency>
 			<groupId>com.cloudinary</groupId>
-			<artifactId>cloudinary-core</artifactId>
+			<artifactId>cloudinary-http44</artifactId>
 			<version>1.39.0</version>
+		</dependency>
+
+		<!-- Apache HTTP Client -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.14</version>
 		</dependency>
 
 

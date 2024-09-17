@@ -17,7 +17,7 @@ public interface ObjectRepository extends JpaRepository<ObjectEntity, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE ObjectEntity O ob SET ob.isDeleted = true WHERE ob.id = :id")
+    @Query("UPDATE ObjectEntity ob SET ob.isDeleted = true WHERE ob.id = :id")
     void softDeleteById(@Param("id") Long id);
 
 }
