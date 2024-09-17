@@ -31,6 +31,11 @@ public class SpaceService {
         return spaceOptional.map(this::convertToSpaceRes);
     }
 
+    public Optional<SpaceRes> getSpaceByName(String name) {
+        Optional<SpaceEntity> spaceOptional = spaceRepository.findByName(name);
+        return spaceOptional.map(this::convertToSpaceRes);
+    }
+
     public SpaceRes createSpace(SpaceReq space) {
         SpaceEntity newSpace = convertToSpaceEntity(space);
         SpaceEntity savedSpace = spaceRepository.save(newSpace);
@@ -51,7 +56,7 @@ public class SpaceService {
     }
 
     public void deleteSpace(Long id) {
-        spaceRepository.deleteById(id);
+        spaceRepository.softDeleteById(id);
     }
 
     private SpaceEntity convertToSpaceEntity(SpaceReq spaceReq) {

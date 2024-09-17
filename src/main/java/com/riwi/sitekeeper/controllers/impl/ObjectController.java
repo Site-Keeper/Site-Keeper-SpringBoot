@@ -52,6 +52,16 @@ public class ObjectController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/name/{name}")
+    @Operation(summary = "Get a object by name", description = "Retrieves a object by its name")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved the object")
+    @ApiResponse(responseCode = "404", description = "Object not found")
+    public ResponseEntity<ObjectRes> getObjectByName(@PathVariable String name) {
+        return objectService.getObjectByName(name)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Update a object", description = "Updates an existing object with the given details")
     @ApiResponse(responseCode = "200", description = "Object updated successfully")

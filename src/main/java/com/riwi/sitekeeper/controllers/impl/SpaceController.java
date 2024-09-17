@@ -60,4 +60,13 @@ public class SpaceController {
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/name/{name}")
+    @Operation(summary = "Find Space by Name", description = "Gets an Space based on the Name")
+    @ApiResponse(responseCode = "200", description = "Space successfully found")
+    @ApiResponse(responseCode = "404", description = "Unable to find Space with the Name provided")
+    public ResponseEntity<SpaceRes> getSpaceByName(@PathVariable String name){
+        Optional<SpaceRes> space = spaceService.getSpaceByName(name);
+        return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }

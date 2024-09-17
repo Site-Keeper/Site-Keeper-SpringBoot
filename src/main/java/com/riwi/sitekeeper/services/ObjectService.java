@@ -35,6 +35,11 @@ public class ObjectService {
         return objectOptional.map(this::convertToObjectRes);
     }
 
+    public Optional<ObjectRes> getObjectByName(String name) {
+        Optional<ObjectEntity> objectOptional = objectRepository.findByName(name);
+        return objectOptional.map(this::convertToObjectRes);
+    }
+
     public ObjectRes createObject(ObjectReq object) {
         ObjectEntity newObject = convertToObjectEntity(object);
         ObjectEntity savedObject = objectRepository.save(newObject);
@@ -55,7 +60,7 @@ public class ObjectService {
     }
 
     public void deleteObject(Long id) {
-        objectRepository.deleteById(id);
+        objectRepository.softDeleteById(id);
     }
 
     private ObjectEntity convertToObjectEntity(ObjectReq objectReq) {

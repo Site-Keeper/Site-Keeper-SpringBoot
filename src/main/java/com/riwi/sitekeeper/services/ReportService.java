@@ -51,7 +51,7 @@ public class ReportService {
     }
 
     public void deleteReport(Long id) {
-        reportRepository.deleteById(id);
+        reportRepository.softDeleteById(id);
     }
 
     private ReportEntity convertToReportEntity(ReportReq reportReq) {

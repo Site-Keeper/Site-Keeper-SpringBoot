@@ -51,7 +51,7 @@ public class LostObjectsService {
     }
 
     public void deleteLostObjects(Long id) {
-        lostObjectsRepository.deleteById(id);
+        lostObjectsRepository.softDeleteById(id);
     }
 
     private LostObjectsEntity convertToLostObjectsEntity(LostObjectsReq lostObjectsReq) {
