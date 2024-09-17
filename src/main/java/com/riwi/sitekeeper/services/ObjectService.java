@@ -2,7 +2,11 @@ package com.riwi.sitekeeper.services;
 
 import com.riwi.sitekeeper.dtos.requests.ObjectReq;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
+import com.riwi.sitekeeper.dtos.responses.ReportRes;
+import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
+import com.riwi.sitekeeper.entitites.ReportEntity;
+import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,6 +78,9 @@ public class ObjectService {
     }
 
     private void updateObjectEntity(ObjectEntity existingObject, ObjectReq updatedObject) {
-        // Implementation left empty as requested
+        existingObject.setName(updatedObject.getName());
+        existingObject.setDescription(updatedObject.getDescription());
+        existingObject.setImage(updatedObject.getImage());
+        existingObject.setSpaceId(updatedObject.getSpaceId());
     }
 }

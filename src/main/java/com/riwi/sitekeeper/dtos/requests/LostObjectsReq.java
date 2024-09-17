@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LostObjectReq {
+public class LostObjectsReq {
 
     @NotBlank(message = "Name is required")
     private String name;

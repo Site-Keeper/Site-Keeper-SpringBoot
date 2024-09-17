@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LostObjectRes {
+public class LostObjectsRes {
 
     private Long id;
 
@@ -20,6 +20,6 @@ public class LostObjectRes {
 
     private String image;
 
-    private SpaceRes spaceId;
+    private SpaceEntity spaceId;
 
 }
