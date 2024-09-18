@@ -17,8 +17,8 @@ public class LostObjectsService {
     @Autowired
     private LostObjectsRepository lostObjectsRepository;
 
-    public List<LostObjectsRes> getAllLostObjects() {
-        List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAll();
+    public List<LostObjectsRes> getAllLostObjects(String token) {
+        List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAllByIsDeletedFalse();
         List<LostObjectsRes> lostObjectsResList = new ArrayList<>();
         for (LostObjectsEntity lostObject : lostObjects) {
             lostObjectsResList.add(convertToLostObjectsRes(lostObject));
@@ -26,18 +26,18 @@ public class LostObjectsService {
         return lostObjectsResList;
     }
 
-    public Optional<LostObjectsRes> getLostObjectsById(Long id) {
+    public Optional<LostObjectsRes> getLostObjectsById(Long id, String token) {
         Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
         return lostObjectsOptional.map(this::convertToLostObjectsRes);
     }
 
-    public LostObjectsRes createLostObjects(LostObjectsReq lostObjects) {
+    public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, String token) {
         LostObjectsEntity newLostObjects = convertToLostObjectsEntity(lostObjects);
         LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
         return convertToLostObjectsRes(savedLostObjects);
     }
 
-    public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects) {
+    public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects, String token) {
         Optional<LostObjectsEntity> existingLostObjectsOptional = lostObjectsRepository.findById(id);
 
         if (existingLostObjectsOptional.isPresent()) {
@@ -50,7 +50,7 @@ public class LostObjectsService {
         }
     }
 
-    public void deleteLostObjects(Long id) {
+    public void deleteLostObjects(Long id, String token) {
         lostObjectsRepository.softDeleteById(id);
     }
 

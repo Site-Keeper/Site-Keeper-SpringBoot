@@ -25,16 +25,16 @@ public class LostObjectsController {
     @PostMapping
     @Operation(summary = "Create a new lost object", description = "Creates a new lost object with the given details")
     @ApiResponse(responseCode = "201", description = "Object created successfully")
-    public ResponseEntity<LostObjectsRes> createLostObject(@RequestBody @Valid LostObjectsReq lostObject) {
-        LostObjectsRes createLostObject = lostObjectService.createLostObjects(lostObject);
+    public ResponseEntity<LostObjectsRes> createLostObject(@RequestBody @Valid LostObjectsReq lostObject, @RequestHeader("Authorization") String token) {
+        LostObjectsRes createLostObject = lostObjectService.createLostObjects(lostObject, token);
         return new ResponseEntity<>(createLostObject, HttpStatus.CREATED);
     }
 
     @GetMapping
     @Operation(summary = "Get all lost objects", description = "Retrieves a list of all lost objects")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of lost objects")
-    public ResponseEntity<List<LostObjectsRes>> getAllLostObjects() {
-        List<LostObjectsRes> lostObject = lostObjectService.getAllLostObjects();
+    public ResponseEntity<List<LostObjectsRes>> getAllLostObjects(@RequestHeader("Authorization") String token) {
+        List<LostObjectsRes> lostObject = lostObjectService.getAllLostObjects(token);
         return ResponseEntity.ok(lostObject);
     }
 
@@ -42,8 +42,8 @@ public class LostObjectsController {
     @Operation(summary = "Get a lost object by ID", description = "Retrieves a lost object by its ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the lost object")
     @ApiResponse(responseCode = "404", description = "Lost object not found")
-    public ResponseEntity<LostObjectsRes> getLostObjectById(@PathVariable Long id) {
-        return lostObjectService.getLostObjectsById(id)
+    public ResponseEntity<LostObjectsRes> getLostObjectById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        return lostObjectService.getLostObjectsById(id, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -52,9 +52,9 @@ public class LostObjectsController {
     @Operation(summary = "Update a lost object", description = "Updates an existing lost object with the given details")
     @ApiResponse(responseCode = "200", description = "Lost object updated successfully")
     @ApiResponse(responseCode = "404", description = "Lost object not found")
-    public ResponseEntity<LostObjectsRes> updateLostObject(@PathVariable Long id, @RequestBody @Valid LostObjectsReq lostObject) {
+    public ResponseEntity<LostObjectsRes> updateLostObject(@PathVariable Long id, @RequestBody @Valid LostObjectsReq lostObject, @RequestHeader("Authorization") String token) {
         try {
-            LostObjectsRes updateLostObject = lostObjectService.updateLostObjects(id, lostObject);
+            LostObjectsRes updateLostObject = lostObjectService.updateLostObjects(id, lostObject, token);
             return ResponseEntity.ok(updateLostObject);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -65,9 +65,9 @@ public class LostObjectsController {
     @Operation(summary = "Delete a lost object", description = "Deletes a lost object by its ID")
     @ApiResponse(responseCode = "204", description = "Lost object deleted successfully")
     @ApiResponse(responseCode = "404", description = "Lost object not found")
-    public ResponseEntity<Void> deleteLostObject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLostObject(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         try {
-            lostObjectService.deleteLostObjects(id);
+            lostObjectService.deleteLostObjects(id, token);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SpaceRepository extends JpaRepository<SpaceEntity, Long> {
+public interface SpaceRepository extends BaseRepository<SpaceEntity>{
 
     Optional<SpaceEntity> findByName(String name);
 
