@@ -18,7 +18,7 @@ public class SpaceService {
     private SpaceRepository spaceRepository;
 
     public List<SpaceRes> getAllSpaces() {
-        List<SpaceEntity> spaces = spaceRepository.findAll();
+        List<SpaceEntity> spaces = spaceRepository.findAllByIsDeletedFalse();
         List<SpaceRes> spaceResList = new ArrayList<>();
         for (SpaceEntity space : spaces) {
             spaceResList.add(convertToSpaceRes(space));

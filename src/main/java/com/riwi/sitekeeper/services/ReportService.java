@@ -18,7 +18,7 @@ public class ReportService {
     private ReportRepository reportRepository;
 
     public List<ReportRes> getAllReports() {
-        List<ReportEntity> reports = reportRepository.findAll();
+        List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
             reportResList.add(convertToReportRes(report));

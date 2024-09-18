@@ -9,11 +9,5 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LostObjectsRepository extends JpaRepository<LostObjectsEntity, Long> {
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE LostObjectsEntity lob SET lob.isDeleted = true WHERE lob.id = :id")
-    void softDeleteById(@Param("id") Long id);
-
+public interface LostObjectsRepository extends BaseRepository<LostObjectsEntity>{
 }

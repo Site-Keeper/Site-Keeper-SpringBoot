@@ -21,8 +21,8 @@ public class ObjectService {
     @Autowired
     private ObjectRepository objectRepository;
 
-    public List<ObjectRes> getAllObjects() {
-        List<ObjectEntity> objects = objectRepository.findAll();
+    public List<ObjectRes> getAllObjects(String token) {
+        List<ObjectEntity> objects = objectRepository.findAllByIsDeletedFalse();
         List<ObjectRes> objectResList = new ArrayList<>();
         for (ObjectEntity object : objects) {
             objectResList.add(convertToObjectRes(object));
@@ -30,23 +30,23 @@ public class ObjectService {
         return objectResList;
     }
 
-    public Optional<ObjectRes> getObjectById(Long id) {
+    public Optional<ObjectRes> getObjectById(Long id, String token) {
         Optional<ObjectEntity> objectOptional = objectRepository.findById(id);
         return objectOptional.map(this::convertToObjectRes);
     }
 
-    public Optional<ObjectRes> getObjectByName(String name) {
+    public Optional<ObjectRes> getObjectByName(String name, String token) {
         Optional<ObjectEntity> objectOptional = objectRepository.findByName(name);
         return objectOptional.map(this::convertToObjectRes);
     }
 
-    public ObjectRes createObject(ObjectReq object) {
+    public ObjectRes createObject(ObjectReq object, String token) {
         ObjectEntity newObject = convertToObjectEntity(object);
         ObjectEntity savedObject = objectRepository.save(newObject);
         return convertToObjectRes(savedObject);
     }
 
-    public ObjectRes updateObject(Long id, ObjectReq updatedObject) {
+    public ObjectRes updateObject(Long id, ObjectReq updatedObject, String token) {
         Optional<ObjectEntity> existingObjectOptional = objectRepository.findById(id);
 
         if (existingObjectOptional.isPresent()) {
@@ -59,7 +59,7 @@ public class ObjectService {
         }
     }
 
-    public void deleteObject(Long id) {
+    public void deleteObject(Long id, String token) {
         objectRepository.softDeleteById(id);
     }
 
