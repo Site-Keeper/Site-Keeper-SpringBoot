@@ -36,7 +36,7 @@ public class SpaceService {
         return spaceOptional.map(this::convertToSpaceRes);
     }
 
-    public SpaceRes createSpace(SpaceReq space) {
+    public SpaceRes createSpace(SpaceReq space, String token) {
         SpaceEntity newSpace = convertToSpaceEntity(space);
         SpaceEntity savedSpace = spaceRepository.save(newSpace);
         return convertToSpaceRes(savedSpace);

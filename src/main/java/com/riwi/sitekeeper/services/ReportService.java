@@ -31,7 +31,7 @@ public class ReportService {
         return reportOptional.map(this::convertToReportRes);
     }
 
-    public ReportRes createReport(ReportReq report) {
+    public ReportRes createReport(ReportReq report, String token) {
         ReportEntity newReport = convertToReportEntity(report);
         ReportEntity savedReport = reportRepository.save(newReport);
         return convertToReportRes(savedReport);

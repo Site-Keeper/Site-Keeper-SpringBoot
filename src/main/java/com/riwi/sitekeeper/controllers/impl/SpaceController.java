@@ -29,8 +29,8 @@ public class SpaceController {
     @PostMapping
     @Operation(summary = "Create a new space", description = "Creates a new Space")
     @ApiResponse(responseCode = "201", description = "Space successfully created")
-    public ResponseEntity<SpaceRes> CreateSpace (@RequestBody SpaceReq space){
-        return ResponseEntity.ok(spaceService.createSpace(space));
+    public ResponseEntity<SpaceRes> CreateSpace (@RequestBody SpaceReq space, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(spaceService.createSpace(space, token));
     }
 
     @PutMapping

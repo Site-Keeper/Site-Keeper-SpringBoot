@@ -26,8 +26,8 @@ public class ReportController {
     @PostMapping
     @Operation(summary = "Create a new report", description = "Creates a new report with the given details")
     @ApiResponse(responseCode = "201", description = "Report created successfully")
-    public ResponseEntity<ReportRes> createReport(@RequestBody @Valid ReportReq report) {
-        ReportRes createdReport = reportService.createReport(report);
+    public ResponseEntity<ReportRes> createReport(@RequestBody @Valid ReportReq report, @RequestHeader("Authorization") String token) {
+        ReportRes createdReport = reportService.createReport(report, token);
         return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
     }
 
