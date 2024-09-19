@@ -1,6 +1,7 @@
 package com.riwi.sitekeeper.clients;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ApiResponse;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationRes;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
@@ -23,26 +24,24 @@ public class NestServiceClient {
         this.nestServiceUrl = nestServiceUrl;
     }
 
-    public ValidationUserRes checkPermission(String targetEntity, String permissions, String token) {
+    public ValidationUserRes checkPermission(ValidationReq validationReq, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        HttpEntity<ValidationReq> entity = new HttpEntity<>(validationReq, headers);
 
         String url = nestServiceUrl + "/auth/validate";
 
-        ResponseEntity<JsonNode> response = restTemplate.exchange(
+        ResponseEntity<ApiResponse<ValidationUserRes>> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 entity,
-                JsonNode.class
+                new ParameterizedTypeReference<ApiResponse<ValidationUserRes>>() {}
         );
 
-        if (response.getBody() != null && response.getBody().has("data")) {
-            JsonNode data = response.getBody().get("data");
-            Long id = data.get("id").asLong();
-            String name = data.get("role").get("name").asText();
-            return new ValidationUserRes(id, name);
+        if (response.getBody() != null && response.getBody().getData() != null) {
+            return response.getBody().getData();
         } else {
             throw new RuntimeException("Failed to retrieve user data");
         }
