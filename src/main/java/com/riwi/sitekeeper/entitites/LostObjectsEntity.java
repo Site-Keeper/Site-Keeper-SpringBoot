@@ -1,5 +1,6 @@
 package com.riwi.sitekeeper.entitites;
 
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -26,6 +27,12 @@ public class LostObjectsEntity extends Auditable {
 
     @Column(nullable = false)
     private String image;
+
+    @Column(nullable = false)
+    private LostObjectsStatus status;
+
+    @Column
+    private Long claimedBy;
 
     @ManyToOne
     @JoinColumn(name = "space_id", nullable = false)

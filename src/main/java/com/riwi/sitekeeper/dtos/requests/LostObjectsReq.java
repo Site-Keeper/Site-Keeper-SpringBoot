@@ -1,6 +1,7 @@
 package com.riwi.sitekeeper.dtos.requests;
 
 import com.riwi.sitekeeper.entitites.SpaceEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,5 +26,8 @@ public class LostObjectsReq {
 
     @NotNull(message = "Space is required")
     private SpaceEntity spaceId;
+
+    @NotNull(message = "Status is required")
+    private LostObjectsStatus status;
 
 }
