@@ -1,5 +1,8 @@
 package com.riwi.sitekeeper.services;
 
+import com.riwi.sitekeeper.clients.NestServiceClient;
+import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
+import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.SpaceReq;
 import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
@@ -17,7 +20,15 @@ public class SpaceService {
     @Autowired
     private SpaceRepository spaceRepository;
 
+    @Autowired
+    private NestServiceClient nestServiceClient;
+
     public List<SpaceRes> getAllSpaces() {
+
+        ValidationReq validationReq = new ValidationReq("spaces", "can_read");
+
+        ValidationUserRes isValid = nestServiceClient.checkPermission(validationReq, token);
+
         List<SpaceEntity> spaces = spaceRepository.findAllByIsDeletedFalse();
         List<SpaceRes> spaceResList = new ArrayList<>();
         for (SpaceEntity space : spaces) {
