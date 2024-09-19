@@ -29,17 +29,17 @@ public class SpaceController {
     @PostMapping
     @Operation(summary = "Create a new space", description = "Creates a new Space")
     @ApiResponse(responseCode = "201", description = "Space successfully created")
-    public ResponseEntity<SpaceRes> CreateSpace (@RequestBody SpaceReq space){
-        return ResponseEntity.ok(spaceService.createSpace(space));
+    public ResponseEntity<SpaceRes> CreateSpace (@RequestBody SpaceReq space, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(spaceService.createSpace(space, token));
     }
 
     @PutMapping
     @Operation(summary = "Update an Space", description = "Updates an space")
     @ApiResponse(responseCode = "200", description = "Space successfully Updated")
     @ApiResponse(responseCode = "404", description = "Unable to update Space")
-    public ResponseEntity<SpaceRes> UpdateSpace (@PathVariable Long id, @RequestBody @Valid SpaceReq space){
+    public ResponseEntity<SpaceRes> UpdateSpace (@PathVariable Long id, @RequestBody @Valid SpaceReq space, @RequestHeader("Authorization") String token){
         try {
-            SpaceRes updatedSpace = spaceService.updateSpace(id, space);
+            SpaceRes updatedSpace = spaceService.updateSpace(id, space, token);
             return ResponseEntity.ok(updatedSpace);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -49,16 +49,16 @@ public class SpaceController {
     @GetMapping
     @Operation(summary = "List all spaces", description = "Lists all Spaces")
     @ApiResponse(responseCode = "200", description = "Spaces successfully gathered")
-    public ResponseEntity<List<SpaceRes>> getAllSpaces(){
-        return ResponseEntity.ok(spaceService.getAllSpaces());
+    public ResponseEntity<List<SpaceRes>> getAllSpaces(@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(spaceService.getAllSpaces(token));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Find Space by Id", description = "Gets an Space based on the Id")
     @ApiResponse(responseCode = "200", description = "Space successfully found")
     @ApiResponse(responseCode = "404", description = "Unable to find Space with the Id provided")
-    public ResponseEntity<SpaceRes> getSpaceById(@PathVariable Long id){
-        Optional<SpaceRes> space = spaceService.getSpaceById(id);
+    public ResponseEntity<SpaceRes> getSpaceById(@PathVariable Long id, @RequestHeader("Authorization") String token){
+        Optional<SpaceRes> space = spaceService.getSpaceById(id, token);
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -66,9 +66,22 @@ public class SpaceController {
     @Operation(summary = "Find Space by Name", description = "Gets an Space based on the Name")
     @ApiResponse(responseCode = "200", description = "Space successfully found")
     @ApiResponse(responseCode = "404", description = "Unable to find Space with the Name provided")
-    public ResponseEntity<SpaceRes> getSpaceByName(@PathVariable String name){
-        Optional<SpaceRes> space = spaceService.getSpaceByName(name);
+    public ResponseEntity<SpaceRes> getSpaceByName(@PathVariable String name, @RequestHeader("Authorization") String token){
+        Optional<SpaceRes> space = spaceService.getSpaceByName(name, token);
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a space", description = "Deletes a space by its ID")
+    @ApiResponse(responseCode = "204", description = "Space deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Space not found")
+    public ResponseEntity<Void> deleteSpace(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        try {
+            spaceService.deleteSpace(id, token);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

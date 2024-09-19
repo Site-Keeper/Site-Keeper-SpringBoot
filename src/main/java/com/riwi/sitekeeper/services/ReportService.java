@@ -17,7 +17,7 @@ public class ReportService {
     @Autowired
     private ReportRepository reportRepository;
 
-    public List<ReportRes> getAllReports() {
+    public List<ReportRes> getAllReports(String token) {
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
@@ -26,18 +26,18 @@ public class ReportService {
         return reportResList;
     }
 
-    public Optional<ReportRes> getReportById(Long id) {
+    public Optional<ReportRes> getReportById(Long id, String token) {
         Optional<ReportEntity> reportOptional = reportRepository.findById(id);
         return reportOptional.map(this::convertToReportRes);
     }
 
-    public ReportRes createReport(ReportReq report) {
+    public ReportRes createReport(ReportReq report, String token) {
         ReportEntity newReport = convertToReportEntity(report);
         ReportEntity savedReport = reportRepository.save(newReport);
         return convertToReportRes(savedReport);
     }
 
-    public ReportRes updateReport(Long id, ReportReq updatedReport) {
+    public ReportRes updateReport(Long id, ReportReq updatedReport, String token) {
         Optional<ReportEntity> existingReportOptional = reportRepository.findById(id);
 
         if (existingReportOptional.isPresent()) {
@@ -50,7 +50,7 @@ public class ReportService {
         }
     }
 
-    public void deleteReport(Long id) {
+    public void deleteReport(Long id, String token) {
         reportRepository.softDeleteById(id);
     }
 

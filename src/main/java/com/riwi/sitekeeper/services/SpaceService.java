@@ -17,7 +17,7 @@ public class SpaceService {
     @Autowired
     private SpaceRepository spaceRepository;
 
-    public List<SpaceRes> getAllSpaces() {
+    public List<SpaceRes> getAllSpaces(String token) {
         List<SpaceEntity> spaces = spaceRepository.findAllByIsDeletedFalse();
         List<SpaceRes> spaceResList = new ArrayList<>();
         for (SpaceEntity space : spaces) {
@@ -26,23 +26,23 @@ public class SpaceService {
         return spaceResList;
     }
 
-    public Optional<SpaceRes> getSpaceById(Long id) {
+    public Optional<SpaceRes> getSpaceById(Long id, String token) {
         Optional<SpaceEntity> spaceOptional = spaceRepository.findById(id);
         return spaceOptional.map(this::convertToSpaceRes);
     }
 
-    public Optional<SpaceRes> getSpaceByName(String name) {
+    public Optional<SpaceRes> getSpaceByName(String name, String token) {
         Optional<SpaceEntity> spaceOptional = spaceRepository.findByName(name);
         return spaceOptional.map(this::convertToSpaceRes);
     }
 
-    public SpaceRes createSpace(SpaceReq space) {
+    public SpaceRes createSpace(SpaceReq space, String token) {
         SpaceEntity newSpace = convertToSpaceEntity(space);
         SpaceEntity savedSpace = spaceRepository.save(newSpace);
         return convertToSpaceRes(savedSpace);
     }
 
-    public SpaceRes updateSpace(Long id, SpaceReq updatedSpace) {
+    public SpaceRes updateSpace(Long id, SpaceReq updatedSpace, String token) {
         Optional<SpaceEntity> existingSpaceOptional = spaceRepository.findById(id);
 
         if (existingSpaceOptional.isPresent()) {
@@ -55,7 +55,7 @@ public class SpaceService {
         }
     }
 
-    public void deleteSpace(Long id) {
+    public void deleteSpace(Long id, String token) {
         spaceRepository.softDeleteById(id);
     }
 
