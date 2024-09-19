@@ -1,5 +1,8 @@
 package com.riwi.sitekeeper.services;
 
+import com.riwi.sitekeeper.clients.NestServiceClient;
+import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
+import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
@@ -17,7 +20,13 @@ public class LostObjectsService {
     @Autowired
     private LostObjectsRepository lostObjectsRepository;
 
+    @Autowired
+    private NestServiceClient nestServiceClient;
+
     public List<LostObjectsRes> getAllLostObjects(String token) {
+        ValidationReq validationReq = new ValidationReq("LostObjects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAllByIsDeletedFalse();
         List<LostObjectsRes> lostObjectsResList = new ArrayList<>();
         for (LostObjectsEntity lostObject : lostObjects) {
