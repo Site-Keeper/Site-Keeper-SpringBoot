@@ -6,6 +6,7 @@ import com.riwi.sitekeeper.dtos.responses.ObjectRes;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.services.ObjectService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class ObjectController {
     @PostMapping
     @Operation(summary = "Create a new object", description = "Creates a new object with the given details")
     @ApiResponse(responseCode = "201", description = "Object created successfully")
-    public ResponseEntity<ObjectRes> createObject(@RequestBody @Valid ObjectReq object, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ObjectRes> createObject(@RequestBody @Valid ObjectReq object,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         ObjectRes createObject = objectService.createObject(object, token);
         return new ResponseEntity<>(createObject, HttpStatus.CREATED);
     }
@@ -37,7 +38,7 @@ public class ObjectController {
     @GetMapping
     @Operation(summary = "Get all objects", description = "Retrieves a list of all objects")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of objects")
-    public ResponseEntity<List<ObjectRes>> getAllObjects(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ObjectRes>> getAllObjects(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         List<ObjectRes> objects = objectService.getAllObjects(token);
         return ResponseEntity.ok(objects);
     }
@@ -46,7 +47,7 @@ public class ObjectController {
     @Operation(summary = "Get a object by ID", description = "Retrieves a object by its ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the object")
     @ApiResponse(responseCode = "404", description = "Object not found")
-    public ResponseEntity<ObjectRes> getObjectById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ObjectRes> getObjectById(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         return objectService.getObjectById(id, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -56,7 +57,7 @@ public class ObjectController {
     @Operation(summary = "Get a object by name", description = "Retrieves a object by its name")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the object")
     @ApiResponse(responseCode = "404", description = "Object not found")
-    public ResponseEntity<ObjectRes> getObjectByName(@PathVariable String name, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ObjectRes> getObjectByName(@PathVariable String name,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         return objectService.getObjectByName(name, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -66,7 +67,7 @@ public class ObjectController {
     @Operation(summary = "Update a object", description = "Updates an existing object with the given details")
     @ApiResponse(responseCode = "200", description = "Object updated successfully")
     @ApiResponse(responseCode = "404", description = "Object not found")
-    public ResponseEntity<ObjectRes> updateObject(@PathVariable Long id, @RequestBody @Valid ObjectReq object, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ObjectRes> updateObject(@PathVariable Long id, @RequestBody @Valid ObjectReq object,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         try {
             ObjectRes updateObject = objectService.updateObject(id, object, token);
             return ResponseEntity.ok(updateObject);
@@ -79,7 +80,7 @@ public class ObjectController {
     @Operation(summary = "Delete a object", description = "Deletes a object by its ID")
     @ApiResponse(responseCode = "204", description = "Object deleted successfully")
     @ApiResponse(responseCode = "404", description = "Object not found")
-    public ResponseEntity<Void> deleteObject(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<Void> deleteObject(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         try {
             objectService.deleteObject(id, token);
             return ResponseEntity.noContent().build();
