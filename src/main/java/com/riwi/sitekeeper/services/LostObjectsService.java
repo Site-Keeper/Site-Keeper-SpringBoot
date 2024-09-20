@@ -38,11 +38,15 @@ public class LostObjectsService {
     }
 
     public Optional<LostObjectsRes> getLostObjectsById(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("LostObjects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
         return lostObjectsOptional.map(this::convertToLostObjectsRes);
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, String token) {
+        ValidationReq validationReq = new ValidationReq("LostObjects", "can_create");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         LostObjectsEntity newLostObjects = convertToLostObjectsEntity(lostObjects);
         LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
         return convertToLostObjectsRes(savedLostObjects);
