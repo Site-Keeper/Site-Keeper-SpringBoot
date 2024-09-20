@@ -21,6 +21,9 @@ public class ObjectService {
     @Autowired
     private ObjectRepository objectRepository;
 
+    @Autowired
+    private SpaceService spaceService;
+
     public List<ObjectRes> getAllObjects(String token) {
         List<ObjectEntity> objects = objectRepository.findAllByIsDeletedFalse();
         List<ObjectRes> objectResList = new ArrayList<>();
@@ -68,7 +71,7 @@ public class ObjectService {
                 .name(objectReq.getName())
                 .description(objectReq.getDescription())
                 .image(objectReq.getImage())
-                .spaceId(objectReq.getSpaceId())
+                .spaceId(spaceService.getSpaceById(objectReq.getSpaceId()).get())
                 .build();
     }
 
@@ -78,7 +81,7 @@ public class ObjectService {
                 .name(objectEntity.getName())
                 .description(objectEntity.getDescription())
                 .image(objectEntity.getImage())
-                .spaceId(objectEntity.getSpaceId())
+                .spaceId(objectEntity.getSpaceId().getId())
                 .build();
     }
 
@@ -86,6 +89,6 @@ public class ObjectService {
         existingObject.setName(updatedObject.getName());
         existingObject.setDescription(updatedObject.getDescription());
         existingObject.setImage(updatedObject.getImage());
-        existingObject.setSpaceId(updatedObject.getSpaceId());
+        existingObject.setSpaceId(spaceService.getSpaceById(updatedObject.getSpaceId()).get());
     }
 }

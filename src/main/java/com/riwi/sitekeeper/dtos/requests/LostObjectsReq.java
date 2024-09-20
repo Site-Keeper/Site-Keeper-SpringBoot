@@ -25,7 +25,7 @@ public class LostObjectsReq {
     private String image;
 
     @NotNull(message = "Space is required")
-    private SpaceEntity spaceId;
+    private Long spaceId;
 
     @NotNull(message = "Status is required")
     private LostObjectsStatus status;

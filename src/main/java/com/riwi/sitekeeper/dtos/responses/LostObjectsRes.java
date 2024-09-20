@@ -21,7 +21,7 @@ public class LostObjectsRes {
 
     private String image;
 
-    private SpaceEntity spaceId;
+    private Long spaceId;
 
     private LostObjectsStatus status;
 

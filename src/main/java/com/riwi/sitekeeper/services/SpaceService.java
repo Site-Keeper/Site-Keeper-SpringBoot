@@ -31,6 +31,10 @@ public class SpaceService {
         return spaceOptional.map(this::convertToSpaceRes);
     }
 
+    public Optional<SpaceEntity> getSpaceById(Long id) {
+        return spaceRepository.findById(id);
+    }
+
     public Optional<SpaceRes> getSpaceByName(String name, String token) {
         Optional<SpaceEntity> spaceOptional = spaceRepository.findByName(name);
         return spaceOptional.map(this::convertToSpaceRes);
@@ -59,7 +63,7 @@ public class SpaceService {
         spaceRepository.softDeleteById(id);
     }
 
-    private SpaceEntity convertToSpaceEntity(SpaceReq spaceReq) {
+    public SpaceEntity convertToSpaceEntity(SpaceReq spaceReq) {
         return SpaceEntity.builder()
                 .name(spaceReq.getName())
                 .location(spaceReq.getLocation())

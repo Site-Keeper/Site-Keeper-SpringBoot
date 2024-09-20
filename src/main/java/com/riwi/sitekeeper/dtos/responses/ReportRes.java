@@ -26,5 +26,5 @@ public class ReportRes {
 
     private LocalDateTime theDate;
 
-    private SpaceEntity spaceId;
+    private Long spaceId;
 }

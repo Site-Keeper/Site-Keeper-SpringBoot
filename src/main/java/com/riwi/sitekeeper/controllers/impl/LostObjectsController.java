@@ -26,7 +26,7 @@ public class LostObjectsController {
     @PostMapping
     @Operation(summary = "Create a new lost object", description = "Creates a new lost object with the given details")
     @ApiResponse(responseCode = "201", description = "Object created successfully")
-    public ResponseEntity<LostObjectsRes> createLostObject(@RequestBody @Valid LostObjectsReq lostObject,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+    public ResponseEntity<LostObjectsRes> createLostObject(@RequestBody LostObjectsReq lostObject,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         LostObjectsRes createLostObject = lostObjectService.createLostObjects(lostObject, token);
         return new ResponseEntity<>(createLostObject, HttpStatus.CREATED);
     }

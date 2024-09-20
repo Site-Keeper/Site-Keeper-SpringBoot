@@ -17,6 +17,6 @@ public class ObjectRes {
 
     private String image;
 
-    private SpaceEntity spaceId;
+    private Long spaceId;
 
 }

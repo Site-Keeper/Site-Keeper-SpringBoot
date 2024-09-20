@@ -25,6 +25,6 @@ public class ObjectReq {
     private String image;
 
     @NotNull(message = "Space is required")
-    private SpaceEntity spaceId;
+    private Long spaceId;
 
 }

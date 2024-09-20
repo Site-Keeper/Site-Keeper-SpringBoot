@@ -30,7 +30,7 @@ public class ObjectController {
     @PostMapping
     @Operation(summary = "Create a new object", description = "Creates a new object with the given details")
     @ApiResponse(responseCode = "201", description = "Object created successfully")
-    public ResponseEntity<ObjectRes> createObject(@RequestBody @Valid ObjectReq object,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ObjectRes> createObject(@RequestBody ObjectReq object,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         ObjectRes createObject = objectService.createObject(object, token);
         return new ResponseEntity<>(createObject, HttpStatus.CREATED);
     }

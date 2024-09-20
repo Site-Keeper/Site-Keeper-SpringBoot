@@ -17,6 +17,9 @@ public class ReportService {
     @Autowired
     private ReportRepository reportRepository;
 
+    @Autowired
+    private SpaceService spaceService;
+
     public List<ReportRes> getAllReports(String token) {
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
@@ -32,7 +35,7 @@ public class ReportService {
     }
 
     public ReportRes createReport(ReportReq report, String token) {
-        ReportEntity newReport = convertToReportEntity(report);
+        ReportEntity newReport = convertToReportEntity(report, token);
         ReportEntity savedReport = reportRepository.save(newReport);
         return convertToReportRes(savedReport);
     }
@@ -54,7 +57,7 @@ public class ReportService {
         reportRepository.softDeleteById(id);
     }
 
-    private ReportEntity convertToReportEntity(ReportReq reportReq) {
+    private ReportEntity convertToReportEntity(ReportReq reportReq, String token) {
         return ReportEntity.builder()
                 .name(reportReq.getName())
                 .description(reportReq.getDescription())
@@ -62,7 +65,7 @@ public class ReportService {
                 .image(reportReq.getImage())
                 .topicId(reportReq.getTopicId())
                 .theDate(reportReq.getTheDate())
-                .spaceId(reportReq.getSpaceId())
+                .spaceId(spaceService.getSpaceById(reportReq.getSpaceId()).get())
                 .build();
     }
 
@@ -75,7 +78,7 @@ public class ReportService {
                 .image(reportEntity.getImage())
                 .topicId(reportEntity.getTopicId())
                 .theDate(reportEntity.getTheDate())
-                .spaceId(reportEntity.getSpaceId())
+                .spaceId(reportEntity.getSpaceId().getId())
                 .build();
     }
 
@@ -86,6 +89,6 @@ public class ReportService {
         existingReport.setImage(updatedReport.getImage());
         existingReport.setTopicId(updatedReport.getTopicId());
         existingReport.setTheDate(updatedReport.getTheDate());
-        existingReport.setSpaceId(updatedReport.getSpaceId());
+        existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).get());
     }
 }

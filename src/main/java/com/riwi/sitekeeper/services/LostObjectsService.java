@@ -23,6 +23,8 @@ public class LostObjectsService {
     @Autowired
     private NestServiceClient nestServiceClient;
 
+    @Autowired SpaceService spaceService;
+
     public List<LostObjectsRes> getAllLostObjects(String token) {
         ValidationReq validationReq = new ValidationReq("LostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
@@ -69,16 +71,26 @@ public class LostObjectsService {
                 .name(lostObjectsReq.getName())
                 .description(lostObjectsReq.getDescription())
                 .image(lostObjectsReq.getImage())
-                .spaceId(lostObjectsReq.getSpaceId())
+                .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).get())
                 .build();
     }
 
     private LostObjectsRes convertToLostObjectsRes(LostObjectsEntity lostObjectsEntity) {
-        // Implementation left empty as requested
-        return new LostObjectsRes();
+        return LostObjectsRes.builder()
+                .id(lostObjectsEntity.getId())
+                .name(lostObjectsEntity.getName())
+                .description(lostObjectsEntity.getDescription())
+                .image(lostObjectsEntity.getImage())
+                .spaceId(lostObjectsEntity.getSpaceId().getId())
+                .status(lostObjectsEntity.getStatus())
+                .build();
     }
 
     private void updateLostObjectsEntity(LostObjectsEntity existingLostObjects, LostObjectsReq updatedLostObjects) {
-        // Implementation left empty as requested
+        existingLostObjects.setName(updatedLostObjects.getName());
+        existingLostObjects.setDescription(updatedLostObjects.getDescription());
+        existingLostObjects.setImage(updatedLostObjects.getImage());
+        existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).get());
+        existingLostObjects.setStatus(updatedLostObjects.getStatus());
     }
 }

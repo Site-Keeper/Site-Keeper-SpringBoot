@@ -30,10 +30,9 @@ public class ReportReq {
     @NotBlank(message = "Topic is required")
     private Long topicId;
 
-    @NotBlank(message = "The Date is required")
     private LocalDateTime theDate;
 
     @NotBlank(message = "Space is required")
-    private SpaceEntity spaceId;
+    private Long spaceId;
 
 }
