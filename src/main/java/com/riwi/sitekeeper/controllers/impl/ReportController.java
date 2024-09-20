@@ -27,7 +27,7 @@ public class ReportController {
     @PostMapping
     @Operation(summary = "Create a new report", description = "Creates a new report with the given details")
     @ApiResponse(responseCode = "201", description = "Report created successfully")
-    public ResponseEntity<ReportRes> createReport(@RequestBody @Valid ReportReq report, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ReportRes> createReport(@RequestBody @Valid ReportReq report,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         ReportRes createdReport = reportService.createReport(report, token);
         return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
     }
@@ -35,7 +35,7 @@ public class ReportController {
     @GetMapping
     @Operation(summary = "Get all reports", description = "Retrieves a list of all reports")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of reports")
-    public ResponseEntity<List<ReportRes>> getAllReports(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ReportRes>> getAllReports(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         List<ReportRes> reports = reportService.getAllReports(token);
         return ResponseEntity.ok(reports);
     }
