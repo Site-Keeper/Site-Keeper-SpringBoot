@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "spaces")
@@ -33,5 +34,8 @@ public class SpaceEntity extends Auditable {
 
     @Column(nullable = false)
     private String image;
+
+    @OneToMany(mappedBy = "spaceId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ObjectEntity> objects;
 
 }

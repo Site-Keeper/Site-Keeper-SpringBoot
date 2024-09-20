@@ -1,9 +1,12 @@
 package com.riwi.sitekeeper.dtos.responses;
 
+import com.riwi.sitekeeper.entitites.ObjectEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -20,5 +23,7 @@ public class SpaceRes {
     private String description;
 
     private String image;
+
+    private List<ObjectEntity> objects;
 
 }

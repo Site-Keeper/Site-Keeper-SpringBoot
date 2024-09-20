@@ -75,6 +75,7 @@ public class SpaceService {
                 .location(spaceEntity.getLocation())
                 .description(spaceEntity.getDescription())
                 .image(spaceEntity.getImage())
+                .objects(spaceEntity.getObjects())
                 .build();
     }
 
