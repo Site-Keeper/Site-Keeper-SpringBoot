@@ -24,9 +24,6 @@ public class ReportReq {
     @NotBlank(message = "Is Event is required")
     private Boolean isEvent;
 
-    @NotBlank(message = "Image is required")
-    private String image;
-
     @NotBlank(message = "Topic is required")
     private Long topicId;
 

@@ -1,18 +1,26 @@
 package com.riwi.sitekeeper.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.riwi.sitekeeper.clients.NestServiceClient;
 import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
+import com.riwi.sitekeeper.dtos.requests.LostObjectsImgReq;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
+import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
+import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,6 +33,9 @@ public class LostObjectsService {
     private NestServiceClient nestServiceClient;
 
     @Autowired SpaceService spaceService;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     private final TransformUtil transformUtil = new TransformUtil();
 
@@ -47,22 +58,50 @@ public class LostObjectsService {
         return lostObjectsOptional.map(transformUtil::convertToLostObjectsRes);
     }
 
-    public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, String token) {
+    public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-        LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostObjects);
+
+        Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+        String imageUrl = (String) uploadResult.get("url");
+
+        LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
+                lostObjects.getName(),
+                lostObjects.getDescription(),
+                imageUrl,
+                lostObjects.getSpaceId(),
+                lostObjects.getStatus()
+        );
+
+        LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostImgReq);
+        newLostObjects.setImage(imageUrl);
         newLostObjects.setCreatedBy(user.getId());
         newLostObjects.setUpdatedBy(user.getId());
+
         LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
         return transformUtil.convertToLostObjectsRes(savedLostObjects);
     }
 
-    public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects, String token) {
+    public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects, MultipartFile image, String token) throws IOException {
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_update");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         Optional<LostObjectsEntity> existingLostObjectsOptional = lostObjectsRepository.findById(id);
 
         if (existingLostObjectsOptional.isPresent()) {
             LostObjectsEntity existingLostObjects = existingLostObjectsOptional.get();
-            transformUtil.updateLostObjectsEntity(existingLostObjects, updatedLostObjects);
+
+            existingLostObjects.setName(updatedLostObjects.getName());
+            existingLostObjects.setDescription(updatedLostObjects.getDescription());
+            existingLostObjects.setStatus(updatedLostObjects.getStatus());
+            existingLostObjects.setUpdatedBy(user.getId());
+
+            if (image != null && !image.isEmpty()) {
+                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                String imageUrl = (String) uploadResult.get("url");
+                existingLostObjects.setImage(imageUrl);
+            }
+
             LostObjectsEntity savedLostObjects = lostObjectsRepository.save(existingLostObjects);
             return transformUtil.convertToLostObjectsRes(savedLostObjects);
         } else {

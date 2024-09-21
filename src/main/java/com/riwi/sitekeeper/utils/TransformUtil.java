@@ -26,7 +26,7 @@ public class TransformUtil {
     private ObjectService objectService;
 
 
-    public LostObjectsEntity convertToLostObjectsEntity(LostObjectsReq lostObjectsReq) {
+    public LostObjectsEntity convertToLostObjectsEntity(LostObjectsImgReq lostObjectsReq) {
         // Implementation left empty as requested
         return LostObjectsEntity.builder()
                 .name(lostObjectsReq.getName())
@@ -47,7 +47,7 @@ public class TransformUtil {
                 .build();
     }
 
-    public void updateLostObjectsEntity(LostObjectsEntity existingLostObjects, LostObjectsReq updatedLostObjects) {
+    public void updateLostObjectsEntity(LostObjectsEntity existingLostObjects, LostObjectsImgReq updatedLostObjects) {
         existingLostObjects.setName(updatedLostObjects.getName());
         existingLostObjects.setDescription(updatedLostObjects.getDescription());
         existingLostObjects.setImage(updatedLostObjects.getImage());
@@ -55,7 +55,7 @@ public class TransformUtil {
         existingLostObjects.setStatus(updatedLostObjects.getStatus());
     }
 
-    public ObjectEntity convertToObjectEntity(ObjectReq objectReq) {
+    public ObjectEntity convertToObjectEntity(ObjectImgReq objectReq) {
         return ObjectEntity.builder()
                 .name(objectReq.getName())
                 .description(objectReq.getDescription())
@@ -74,7 +74,7 @@ public class TransformUtil {
                 .build();
     }
 
-    public void updateObjectEntity(ObjectEntity existingObject, ObjectReq updatedObject) {
+    public void updateObjectEntity(ObjectEntity existingObject, ObjectImgReq updatedObject) {
         existingObject.setName(updatedObject.getName());
         existingObject.setDescription(updatedObject.getDescription());
         existingObject.setImage(updatedObject.getImage());
