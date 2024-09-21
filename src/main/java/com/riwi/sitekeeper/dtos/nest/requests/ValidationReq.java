@@ -1,5 +1,6 @@
 package com.riwi.sitekeeper.dtos.nest.requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ValidationReq {
 
-    @NotBlank(message = "Entity is required")
+    @JsonProperty("entity")
     private String entity;
 
-    @NotBlank(message = "Permissions is required")
+    @JsonProperty("permissions")
     private String permissions;
 
 }

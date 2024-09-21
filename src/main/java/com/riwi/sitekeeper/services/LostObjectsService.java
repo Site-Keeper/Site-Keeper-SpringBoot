@@ -26,7 +26,7 @@ public class LostObjectsService {
     @Autowired SpaceService spaceService;
 
     public List<LostObjectsRes> getAllLostObjects(String token) {
-        ValidationReq validationReq = new ValidationReq("LostObjects", "can_read");
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAllByIsDeletedFalse();
@@ -38,16 +38,18 @@ public class LostObjectsService {
     }
 
     public Optional<LostObjectsRes> getLostObjectsById(Long id, String token) {
-        ValidationReq validationReq = new ValidationReq("LostObjects", "can_read");
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
         return lostObjectsOptional.map(this::convertToLostObjectsRes);
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, String token) {
-        ValidationReq validationReq = new ValidationReq("LostObjects", "can_create");
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         LostObjectsEntity newLostObjects = convertToLostObjectsEntity(lostObjects);
+        newLostObjects.setCreatedBy(user.getId());
+        newLostObjects.setUpdatedBy(user.getId());
         LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
         return convertToLostObjectsRes(savedLostObjects);
     }

@@ -47,10 +47,11 @@ public class SpaceService {
     }
 
     public SpaceRes createSpace(SpaceReq space, String token) {
-        ValidationReq validationReq = new ValidationReq("Spaces", "can_create");
+        ValidationReq validationReq = new ValidationReq("spaces", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         SpaceEntity newSpace = convertToSpaceEntity(space);
         newSpace.setCreatedBy(user.getId());
+        newSpace.setUpdatedBy(user.getId());
         SpaceEntity savedSpace = spaceRepository.save(newSpace);
         return convertToSpaceRes(savedSpace);
     }

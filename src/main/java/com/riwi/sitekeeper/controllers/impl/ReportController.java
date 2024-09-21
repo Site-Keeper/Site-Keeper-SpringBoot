@@ -28,6 +28,7 @@ public class ReportController {
     @Operation(summary = "Create a new report", description = "Creates a new report with the given details")
     @ApiResponse(responseCode = "201", description = "Report created successfully")
     public ResponseEntity<ReportRes> createReport(@RequestBody ReportReq report,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         ReportRes createdReport = reportService.createReport(report, token);
         return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
     }
@@ -36,6 +37,7 @@ public class ReportController {
     @Operation(summary = "Get all reports", description = "Retrieves a list of all reports")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of reports")
     public ResponseEntity<List<ReportRes>> getAllReports(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         List<ReportRes> reports = reportService.getAllReports(token);
         return ResponseEntity.ok(reports);
     }
@@ -45,6 +47,7 @@ public class ReportController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the report")
     @ApiResponse(responseCode = "404", description = "Report not found")
     public ResponseEntity<ReportRes> getReportById(@PathVariable Long id,@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         return reportService.getReportById(id, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -55,6 +58,7 @@ public class ReportController {
     @ApiResponse(responseCode = "200", description = "Report updated successfully")
     @ApiResponse(responseCode = "404", description = "Report not found")
     public ResponseEntity<ReportRes> updateReport(@PathVariable Long id, @RequestBody @Valid ReportReq report,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         try {
             ReportRes updatedReport = reportService.updateReport(id, report, token);
             return ResponseEntity.ok(updatedReport);
@@ -68,6 +72,7 @@ public class ReportController {
     @ApiResponse(responseCode = "204", description = "Report deleted successfully")
     @ApiResponse(responseCode = "404", description = "Report not found")
     public ResponseEntity<Void> deleteReport(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         try {
             reportService.deleteReport(id, token);
             return ResponseEntity.noContent().build();

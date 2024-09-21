@@ -32,6 +32,6 @@ public abstract class Auditable {
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
 }

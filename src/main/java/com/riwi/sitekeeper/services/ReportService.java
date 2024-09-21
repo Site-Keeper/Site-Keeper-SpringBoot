@@ -1,5 +1,8 @@
 package com.riwi.sitekeeper.services;
 
+import com.riwi.sitekeeper.clients.NestServiceClient;
+import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
+import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.entitites.ReportEntity;
@@ -20,6 +23,9 @@ public class ReportService {
     @Autowired
     private SpaceService spaceService;
 
+    @Autowired
+    private NestServiceClient nestServiceClient;
+
     public List<ReportRes> getAllReports(String token) {
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
@@ -35,7 +41,11 @@ public class ReportService {
     }
 
     public ReportRes createReport(ReportReq report, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_create");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         ReportEntity newReport = convertToReportEntity(report, token);
+        newReport.setCreatedBy(user.getId());
+        newReport.setUpdatedBy(user.getId());
         ReportEntity savedReport = reportRepository.save(newReport);
         return convertToReportRes(savedReport);
     }

@@ -31,6 +31,7 @@ public class SpaceController {
     @Operation(summary = "Create a new space", description = "Creates a new Space")
     @ApiResponse(responseCode = "201", description = "Space successfully created")
     public ResponseEntity<SpaceRes> CreateSpace (@RequestBody SpaceReq space,@Parameter(hidden = true) @RequestHeader("Authorization") String token){
+        token = token.substring(7);
         return ResponseEntity.ok(spaceService.createSpace(space, token));
     }
 
@@ -39,6 +40,7 @@ public class SpaceController {
     @ApiResponse(responseCode = "200", description = "Space successfully Updated")
     @ApiResponse(responseCode = "404", description = "Unable to update Space")
     public ResponseEntity<SpaceRes> UpdateSpace (@PathVariable Long id, @RequestBody @Valid SpaceReq space,@Parameter(hidden = true) @RequestHeader("Authorization") String token){
+        token = token.substring(7);
         try {
             SpaceRes updatedSpace = spaceService.updateSpace(id, space, token);
             return ResponseEntity.ok(updatedSpace);
@@ -51,6 +53,7 @@ public class SpaceController {
     @Operation(summary = "List all spaces", description = "Lists all Spaces")
     @ApiResponse(responseCode = "200", description = "Spaces successfully gathered")
     public ResponseEntity<List<SpaceRes>> getAllSpaces(@Parameter(hidden = true) @RequestHeader("Authorization") String token){
+        token = token.substring(7);
         return ResponseEntity.ok(spaceService.getAllSpaces(token));
     }
 
@@ -59,6 +62,7 @@ public class SpaceController {
     @ApiResponse(responseCode = "200", description = "Space successfully found")
     @ApiResponse(responseCode = "404", description = "Unable to find Space with the Id provided")
     public ResponseEntity<SpaceRes> getSpaceById(@PathVariable Long id, @Parameter(hidden = true) @RequestHeader("Authorization") String token){
+        token = token.substring(7);
         Optional<SpaceRes> space = spaceService.getSpaceById(id, token);
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -68,6 +72,7 @@ public class SpaceController {
     @ApiResponse(responseCode = "200", description = "Space successfully found")
     @ApiResponse(responseCode = "404", description = "Unable to find Space with the Name provided")
     public ResponseEntity<SpaceRes> getSpaceByName(@PathVariable String name, @Parameter(hidden = true) @RequestHeader("Authorization") String token){
+        token = token.substring(7);
         Optional<SpaceRes> space = spaceService.getSpaceByName(name, token);
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -77,6 +82,7 @@ public class SpaceController {
     @ApiResponse(responseCode = "204", description = "Space deleted successfully")
     @ApiResponse(responseCode = "404", description = "Space not found")
     public ResponseEntity<Void> deleteSpace(@PathVariable Long id, @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         try {
             spaceService.deleteSpace(id, token);
             return ResponseEntity.noContent().build();

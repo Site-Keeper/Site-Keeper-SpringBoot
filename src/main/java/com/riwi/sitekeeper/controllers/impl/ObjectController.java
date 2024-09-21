@@ -31,6 +31,7 @@ public class ObjectController {
     @Operation(summary = "Create a new object", description = "Creates a new object with the given details")
     @ApiResponse(responseCode = "201", description = "Object created successfully")
     public ResponseEntity<ObjectRes> createObject(@RequestBody ObjectReq object,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         ObjectRes createObject = objectService.createObject(object, token);
         return new ResponseEntity<>(createObject, HttpStatus.CREATED);
     }
@@ -39,6 +40,7 @@ public class ObjectController {
     @Operation(summary = "Get all objects", description = "Retrieves a list of all objects")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of objects")
     public ResponseEntity<List<ObjectRes>> getAllObjects(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         List<ObjectRes> objects = objectService.getAllObjects(token);
         return ResponseEntity.ok(objects);
     }
@@ -48,6 +50,7 @@ public class ObjectController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the object")
     @ApiResponse(responseCode = "404", description = "Object not found")
     public ResponseEntity<ObjectRes> getObjectById(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         return objectService.getObjectById(id, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -58,6 +61,7 @@ public class ObjectController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the object")
     @ApiResponse(responseCode = "404", description = "Object not found")
     public ResponseEntity<ObjectRes> getObjectByName(@PathVariable String name,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         return objectService.getObjectByName(name, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -68,6 +72,7 @@ public class ObjectController {
     @ApiResponse(responseCode = "200", description = "Object updated successfully")
     @ApiResponse(responseCode = "404", description = "Object not found")
     public ResponseEntity<ObjectRes> updateObject(@PathVariable Long id, @RequestBody @Valid ObjectReq object,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         try {
             ObjectRes updateObject = objectService.updateObject(id, object, token);
             return ResponseEntity.ok(updateObject);
@@ -81,6 +86,7 @@ public class ObjectController {
     @ApiResponse(responseCode = "204", description = "Object deleted successfully")
     @ApiResponse(responseCode = "404", description = "Object not found")
     public ResponseEntity<Void> deleteObject(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
         try {
             objectService.deleteObject(id, token);
             return ResponseEntity.noContent().build();

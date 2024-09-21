@@ -1,5 +1,8 @@
 package com.riwi.sitekeeper.services;
 
+import com.riwi.sitekeeper.clients.NestServiceClient;
+import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
+import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ObjectReq;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
@@ -24,6 +27,9 @@ public class ObjectService {
     @Autowired
     private SpaceService spaceService;
 
+    @Autowired
+    private NestServiceClient nestServiceClient;
+
     public List<ObjectRes> getAllObjects(String token) {
         List<ObjectEntity> objects = objectRepository.findAllByIsDeletedFalse();
         List<ObjectRes> objectResList = new ArrayList<>();
@@ -44,7 +50,11 @@ public class ObjectService {
     }
 
     public ObjectRes createObject(ObjectReq object, String token) {
+        ValidationReq validationReq = new ValidationReq("objects", "can_create");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         ObjectEntity newObject = convertToObjectEntity(object);
+        newObject.setCreatedBy(user.getId());
+        newObject.setUpdatedBy(user.getId());
         ObjectEntity savedObject = objectRepository.save(newObject);
         return convertToObjectRes(savedObject);
     }
