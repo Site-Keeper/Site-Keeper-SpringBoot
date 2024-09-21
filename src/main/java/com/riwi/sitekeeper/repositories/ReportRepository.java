@@ -11,9 +11,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReportRepository extends BaseRepository<ReportEntity> {
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE ReportEntity rep SET rep.isDeleted = true WHERE rep.id = :id")
-    void softDeleteById(@Param("id") Long id);
-
 }

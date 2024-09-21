@@ -15,9 +15,4 @@ public interface ObjectRepository extends BaseRepository<ObjectEntity> {
 
     Optional<ObjectEntity> findByName(String name);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE ObjectEntity ob SET ob.isDeleted = true WHERE ob.id = :id")
-    void softDeleteById(@Param("id") Long id);
-
 }

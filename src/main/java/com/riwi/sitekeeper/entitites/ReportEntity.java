@@ -32,6 +32,7 @@ public class ReportEntity extends Auditable {
     @Column(nullable = false)
     private Boolean isEvent;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReportStatus status;
 

@@ -28,6 +28,7 @@ public class LostObjectsEntity extends Auditable {
     @Column(nullable = false)
     private String image;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LostObjectsStatus status;
 
