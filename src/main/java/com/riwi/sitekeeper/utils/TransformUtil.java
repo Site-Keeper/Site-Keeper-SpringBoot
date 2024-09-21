@@ -1,9 +1,6 @@
 package com.riwi.sitekeeper.utils;
 
-import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
-import com.riwi.sitekeeper.dtos.requests.ObjectReq;
-import com.riwi.sitekeeper.dtos.requests.ReportReq;
-import com.riwi.sitekeeper.dtos.requests.SpaceReq;
+import com.riwi.sitekeeper.dtos.requests.*;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
@@ -16,6 +13,8 @@ import com.riwi.sitekeeper.services.ObjectService;
 import com.riwi.sitekeeper.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TransformUtil {
@@ -120,7 +119,7 @@ public class TransformUtil {
 
 
 
-    public SpaceEntity convertToSpaceEntity(SpaceReq spaceReq) {
+    public SpaceEntity convertToSpaceEntity(SpaceImgReq spaceReq) {
         return SpaceEntity.builder()
                 .name(spaceReq.getName())
                 .location(spaceReq.getLocation())
@@ -136,11 +135,15 @@ public class TransformUtil {
                 .location(spaceEntity.getLocation())
                 .description(spaceEntity.getDescription())
                 .image(spaceEntity.getImage())
-                .objects(spaceEntity.getObjects().stream().map(this::convertToObjectRes).collect(Collectors.toList()))
+                .objects(Optional.ofNullable(spaceEntity.getObjects())
+                        .map(objects -> objects.stream()
+                                .map(this::convertToObjectRes)
+                                .collect(Collectors.toList()))
+                        .orElse(Collections.emptyList()))
                 .build();
     }
 
-    public void updateSpaceEntity(SpaceEntity existingSpace, SpaceReq updatedSpace) {
+    public void updateSpaceEntity(SpaceEntity existingSpace, SpaceImgReq updatedSpace) {
         existingSpace.setName(updatedSpace.getName());
         existingSpace.setLocation(updatedSpace.getLocation());
         existingSpace.setDescription(updatedSpace.getDescription());

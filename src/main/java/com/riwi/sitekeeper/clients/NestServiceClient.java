@@ -33,10 +33,6 @@ public class NestServiceClient {
 
         String url = nestServiceUrl + "/auth/validate";
 
-        System.out.println("Sending request to: " + url);
-        System.out.println("Headers: " + entity.getHeaders());
-        System.out.println("Body: " + entity.getBody());
-
         ResponseEntity<ApiResponse<ValidationUserRes>> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,

@@ -8,13 +8,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpaceReq {
+public class SpaceImgReq {
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -24,4 +22,8 @@ public class SpaceReq {
 
     @NotBlank(message = "Description is required")
     private String description;
+
+    @NotNull(message = "Image is required")
+    private String image;
+
 }
