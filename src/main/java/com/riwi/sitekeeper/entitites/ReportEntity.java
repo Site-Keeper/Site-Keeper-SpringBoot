@@ -33,9 +33,6 @@ public class ReportEntity extends Auditable {
     private Boolean isEvent;
 
     @Column(nullable = false)
-    private String image;
-
-    @Column(nullable = false)
     private ReportStatus status;
 
     @Column(nullable = false)

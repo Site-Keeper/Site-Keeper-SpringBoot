@@ -87,7 +87,6 @@ public class TransformUtil {
                 .name(reportReq.getName())
                 .description(reportReq.getDescription())
                 .isEvent(reportReq.getIsEvent())
-                .image(reportReq.getImage())
                 .topicId(reportReq.getTopicId())
                 .theDate(reportReq.getTheDate())
                 .spaceId(spaceService.getSpaceById(reportReq.getSpaceId()).get())
@@ -100,7 +99,6 @@ public class TransformUtil {
                 .name(reportEntity.getName())
                 .description(reportEntity.getDescription())
                 .isEvent(reportEntity.getIsEvent())
-                .image(reportEntity.getImage())
                 .topicId(reportEntity.getTopicId())
                 .theDate(reportEntity.getTheDate())
                 .spaceId(reportEntity.getSpaceId().getId())
@@ -111,7 +109,6 @@ public class TransformUtil {
         existingReport.setName(updatedReport.getName());
         existingReport.setDescription(updatedReport.getDescription());
         existingReport.setIsEvent(updatedReport.getIsEvent());
-        existingReport.setImage(updatedReport.getImage());
         existingReport.setTopicId(updatedReport.getTopicId());
         existingReport.setTheDate(updatedReport.getTheDate());
         existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).get());
