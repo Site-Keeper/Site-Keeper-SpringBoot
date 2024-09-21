@@ -7,6 +7,7 @@ import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
+import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +26,16 @@ public class LostObjectsService {
 
     @Autowired SpaceService spaceService;
 
+    private final TransformUtil transformUtil = new TransformUtil();
+
     public List<LostObjectsRes> getAllLostObjects(String token) {
-        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
+        ValidationReq validationReq = new ValidationReq("lostObjects    ", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAllByIsDeletedFalse();
         List<LostObjectsRes> lostObjectsResList = new ArrayList<>();
         for (LostObjectsEntity lostObject : lostObjects) {
-            lostObjectsResList.add(convertToLostObjectsRes(lostObject));
+            lostObjectsResList.add(transformUtil.convertToLostObjectsRes(lostObject));
         }
         return lostObjectsResList;
     }
@@ -41,17 +44,17 @@ public class LostObjectsService {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
-        return lostObjectsOptional.map(this::convertToLostObjectsRes);
+        return lostObjectsOptional.map(transformUtil::convertToLostObjectsRes);
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, String token) {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-        LostObjectsEntity newLostObjects = convertToLostObjectsEntity(lostObjects);
+        LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostObjects);
         newLostObjects.setCreatedBy(user.getId());
         newLostObjects.setUpdatedBy(user.getId());
         LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
-        return convertToLostObjectsRes(savedLostObjects);
+        return transformUtil.convertToLostObjectsRes(savedLostObjects);
     }
 
     public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects, String token) {
@@ -59,9 +62,9 @@ public class LostObjectsService {
 
         if (existingLostObjectsOptional.isPresent()) {
             LostObjectsEntity existingLostObjects = existingLostObjectsOptional.get();
-            updateLostObjectsEntity(existingLostObjects, updatedLostObjects);
+            transformUtil.updateLostObjectsEntity(existingLostObjects, updatedLostObjects);
             LostObjectsEntity savedLostObjects = lostObjectsRepository.save(existingLostObjects);
-            return convertToLostObjectsRes(savedLostObjects);
+            return transformUtil.convertToLostObjectsRes(savedLostObjects);
         } else {
             throw new RuntimeException("LostObjects not found with id: " + id);
         }
@@ -69,34 +72,5 @@ public class LostObjectsService {
 
     public void deleteLostObjects(Long id, String token) {
         lostObjectsRepository.softDeleteById(id);
-    }
-
-    private LostObjectsEntity convertToLostObjectsEntity(LostObjectsReq lostObjectsReq) {
-        // Implementation left empty as requested
-        return LostObjectsEntity.builder()
-                .name(lostObjectsReq.getName())
-                .description(lostObjectsReq.getDescription())
-                .image(lostObjectsReq.getImage())
-                .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).get())
-                .build();
-    }
-
-    private LostObjectsRes convertToLostObjectsRes(LostObjectsEntity lostObjectsEntity) {
-        return LostObjectsRes.builder()
-                .id(lostObjectsEntity.getId())
-                .name(lostObjectsEntity.getName())
-                .description(lostObjectsEntity.getDescription())
-                .image(lostObjectsEntity.getImage())
-                .spaceId(lostObjectsEntity.getSpaceId().getId())
-                .status(lostObjectsEntity.getStatus())
-                .build();
-    }
-
-    private void updateLostObjectsEntity(LostObjectsEntity existingLostObjects, LostObjectsReq updatedLostObjects) {
-        existingLostObjects.setName(updatedLostObjects.getName());
-        existingLostObjects.setDescription(updatedLostObjects.getDescription());
-        existingLostObjects.setImage(updatedLostObjects.getImage());
-        existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).get());
-        existingLostObjects.setStatus(updatedLostObjects.getStatus());
     }
 }

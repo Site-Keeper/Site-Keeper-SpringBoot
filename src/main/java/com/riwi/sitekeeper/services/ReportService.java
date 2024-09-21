@@ -7,6 +7,7 @@ import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.entitites.ReportEntity;
 import com.riwi.sitekeeper.repositories.ReportRepository;
+import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,28 +27,30 @@ public class ReportService {
     @Autowired
     private NestServiceClient nestServiceClient;
 
+    private final TransformUtil transformUtil = new TransformUtil();
+
     public List<ReportRes> getAllReports(String token) {
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            reportResList.add(convertToReportRes(report));
+            reportResList.add(transformUtil.convertToReportRes(report));
         }
         return reportResList;
     }
 
     public Optional<ReportRes> getReportById(Long id, String token) {
         Optional<ReportEntity> reportOptional = reportRepository.findById(id);
-        return reportOptional.map(this::convertToReportRes);
+        return reportOptional.map(transformUtil::convertToReportRes);
     }
 
     public ReportRes createReport(ReportReq report, String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-        ReportEntity newReport = convertToReportEntity(report, token);
+        ReportEntity newReport = transformUtil.convertToReportEntity(report, token);
         newReport.setCreatedBy(user.getId());
         newReport.setUpdatedBy(user.getId());
         ReportEntity savedReport = reportRepository.save(newReport);
-        return convertToReportRes(savedReport);
+        return transformUtil.convertToReportRes(savedReport);
     }
 
     public ReportRes updateReport(Long id, ReportReq updatedReport, String token) {
@@ -55,9 +58,9 @@ public class ReportService {
 
         if (existingReportOptional.isPresent()) {
             ReportEntity existingReport = existingReportOptional.get();
-            updateReportEntity(existingReport, updatedReport);
+            transformUtil.updateReportEntity(existingReport, updatedReport);
             ReportEntity savedReport = reportRepository.save(existingReport);
-            return convertToReportRes(savedReport);
+            return transformUtil.convertToReportRes(savedReport);
         } else {
             throw new RuntimeException("Report not found with id: " + id);
         }
@@ -65,40 +68,5 @@ public class ReportService {
 
     public void deleteReport(Long id, String token) {
         reportRepository.softDeleteById(id);
-    }
-
-    private ReportEntity convertToReportEntity(ReportReq reportReq, String token) {
-        return ReportEntity.builder()
-                .name(reportReq.getName())
-                .description(reportReq.getDescription())
-                .isEvent(reportReq.getIsEvent())
-                .image(reportReq.getImage())
-                .topicId(reportReq.getTopicId())
-                .theDate(reportReq.getTheDate())
-                .spaceId(spaceService.getSpaceById(reportReq.getSpaceId()).get())
-                .build();
-    }
-
-    private ReportRes convertToReportRes(ReportEntity reportEntity) {
-        return ReportRes.builder()
-                .id(reportEntity.getId())
-                .name(reportEntity.getName())
-                .description(reportEntity.getDescription())
-                .isEvent(reportEntity.getIsEvent())
-                .image(reportEntity.getImage())
-                .topicId(reportEntity.getTopicId())
-                .theDate(reportEntity.getTheDate())
-                .spaceId(reportEntity.getSpaceId().getId())
-                .build();
-    }
-
-    private void updateReportEntity(ReportEntity existingReport, ReportReq updatedReport) {
-        existingReport.setName(updatedReport.getName());
-        existingReport.setDescription(updatedReport.getDescription());
-        existingReport.setIsEvent(updatedReport.getIsEvent());
-        existingReport.setImage(updatedReport.getImage());
-        existingReport.setTopicId(updatedReport.getTopicId());
-        existingReport.setTheDate(updatedReport.getTheDate());
-        existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).get());
     }
 }

@@ -11,6 +11,7 @@ import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.entitites.ReportEntity;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
+import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,38 +26,37 @@ public class ObjectService {
     private ObjectRepository objectRepository;
 
     @Autowired
-    private SpaceService spaceService;
-
-    @Autowired
     private NestServiceClient nestServiceClient;
+
+    private final TransformUtil transformUtil = new TransformUtil();
 
     public List<ObjectRes> getAllObjects(String token) {
         List<ObjectEntity> objects = objectRepository.findAllByIsDeletedFalse();
         List<ObjectRes> objectResList = new ArrayList<>();
         for (ObjectEntity object : objects) {
-            objectResList.add(convertToObjectRes(object));
+            objectResList.add(transformUtil.convertToObjectRes(object));
         }
         return objectResList;
     }
 
     public Optional<ObjectRes> getObjectById(Long id, String token) {
         Optional<ObjectEntity> objectOptional = objectRepository.findById(id);
-        return objectOptional.map(this::convertToObjectRes);
+        return objectOptional.map(transformUtil::convertToObjectRes);
     }
 
     public Optional<ObjectRes> getObjectByName(String name, String token) {
         Optional<ObjectEntity> objectOptional = objectRepository.findByName(name);
-        return objectOptional.map(this::convertToObjectRes);
+        return objectOptional.map(transformUtil::convertToObjectRes);
     }
 
     public ObjectRes createObject(ObjectReq object, String token) {
         ValidationReq validationReq = new ValidationReq("objects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-        ObjectEntity newObject = convertToObjectEntity(object);
+        ObjectEntity newObject = transformUtil.convertToObjectEntity(object);
         newObject.setCreatedBy(user.getId());
         newObject.setUpdatedBy(user.getId());
         ObjectEntity savedObject = objectRepository.save(newObject);
-        return convertToObjectRes(savedObject);
+        return transformUtil.convertToObjectRes(savedObject);
     }
 
     public ObjectRes updateObject(Long id, ObjectReq updatedObject, String token) {
@@ -64,9 +64,9 @@ public class ObjectService {
 
         if (existingObjectOptional.isPresent()) {
             ObjectEntity existingObject = existingObjectOptional.get();
-            updateObjectEntity(existingObject, updatedObject);
+            transformUtil.updateObjectEntity(existingObject, updatedObject);
             ObjectEntity savedObject = objectRepository.save(existingObject);
-            return convertToObjectRes(savedObject);
+            return transformUtil.convertToObjectRes(savedObject);
         } else {
             throw new RuntimeException("Object not found with id: " + id);
         }
@@ -74,31 +74,5 @@ public class ObjectService {
 
     public void deleteObject(Long id, String token) {
         objectRepository.softDeleteById(id);
-    }
-
-    private ObjectEntity convertToObjectEntity(ObjectReq objectReq) {
-        return ObjectEntity.builder()
-                .name(objectReq.getName())
-                .description(objectReq.getDescription())
-                .image(objectReq.getImage())
-                .spaceId(spaceService.getSpaceById(objectReq.getSpaceId()).get())
-                .build();
-    }
-
-    private ObjectRes convertToObjectRes(ObjectEntity objectEntity) {
-        return ObjectRes.builder()
-                .id(objectEntity.getId())
-                .name(objectEntity.getName())
-                .description(objectEntity.getDescription())
-                .image(objectEntity.getImage())
-                .spaceId(objectEntity.getSpaceId().getId())
-                .build();
-    }
-
-    private void updateObjectEntity(ObjectEntity existingObject, ObjectReq updatedObject) {
-        existingObject.setName(updatedObject.getName());
-        existingObject.setDescription(updatedObject.getDescription());
-        existingObject.setImage(updatedObject.getImage());
-        existingObject.setSpaceId(spaceService.getSpaceById(updatedObject.getSpaceId()).get());
     }
 }

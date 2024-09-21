@@ -24,6 +24,6 @@ public class SpaceRes {
 
     private String image;
 
-    private List<ObjectEntity> objects;
+    private List<ObjectRes> objects;
 
 }
