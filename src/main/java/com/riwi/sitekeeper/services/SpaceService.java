@@ -36,9 +36,7 @@ public class SpaceService {
 
     private final TransformUtil transformUtil = new TransformUtil();
 
-    public List<SpaceRes> getAllSpaces(String token) {
-        ValidationReq validationReq = new ValidationReq("spaces", "can_read");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+    public List<SpaceRes> getAllSpaces() {
 
         List<SpaceEntity> spaces = spaceRepository.findAllByIsDeletedFalse();
         List<SpaceRes> spaceResList = new ArrayList<>();

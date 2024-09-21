@@ -10,8 +10,4 @@ import java.util.List;
 
 @Repository
 public interface LostObjectsRepository extends BaseRepository<LostObjectsEntity>{
-
-    @Query("SELECT l FROM LostObjectsEntity l WHERE l.status = 'RECLAMADO' AND l.updatedAt >= :twoDaysAgo")
-    List<LostObjectsEntity> findRecentlyClaimedObjects(@Param("twoDaysAgo") LocalDateTime twoDaysAgo);
-
 }

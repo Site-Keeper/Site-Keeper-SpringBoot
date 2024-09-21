@@ -59,17 +59,6 @@ public class LostObjectsController {
         return ResponseEntity.ok(lostObject);
     }
 
-    @GetMapping("/recently-claimed")
-    @Operation(summary = "Get recently claimed lost objects",
-            description = "Retrieves lost objects with status 'RECLAMADO' and updated within the last 2 days")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of recently claimed lost objects")
-    public ResponseEntity<List<LostObjectsRes>> getRecentlyClaimedObjects(
-            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
-        token = token.substring(7);
-        List<LostObjectsRes> recentlyClaimedObjects = lostObjectsService.getRecentlyClaimedObjects();
-        return ResponseEntity.ok(recentlyClaimedObjects);
-    }
-
     @GetMapping("/{id}")
     @Operation(summary = "Get a lost object by ID", description = "Retrieves a lost object by its ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the lost object")

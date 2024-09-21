@@ -60,14 +60,6 @@ public class LostObjectsService {
         return lostObjectsOptional.map(transformUtil::convertToLostObjectsRes);
     }
 
-    public List<LostObjectsRes> getRecentlyClaimedObjects() {
-        LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
-        List<LostObjectsEntity> recentlyClaimedObjects = lostObjectsRepository.findRecentlyClaimedObjects(twoDaysAgo);
-        return recentlyClaimedObjects.stream()
-                .map(transformUtil::convertToLostObjectsRes)
-                .collect(Collectors.toList());
-    }
-
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);

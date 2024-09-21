@@ -81,9 +81,8 @@ public class SpaceController {
     @GetMapping
     @Operation(summary = "List all spaces", description = "Lists all Spaces")
     @ApiResponse(responseCode = "200", description = "Spaces successfully gathered")
-    public ResponseEntity<List<SpaceRes>> getAllSpaces(@Parameter(hidden = true) @RequestHeader("Authorization") String token){
-        token = token.substring(7);
-        return ResponseEntity.ok(spaceService.getAllSpaces(token));
+    public ResponseEntity<List<SpaceRes>> getAllSpaces(){
+        return ResponseEntity.ok(spaceService.getAllSpaces());
     }
 
     @GetMapping("/{id}")
