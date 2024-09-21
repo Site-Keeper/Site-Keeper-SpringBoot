@@ -68,6 +68,16 @@ public class SpaceService {
         return spaceOptional.map(transformUtil::convertToSpaceRes);
     }
 
+    public List<SpaceRes> getSpacesByName(String name, String token) {
+        ValidationReq validationReq = new ValidationReq("spaces", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<SpaceEntity> spaces = spaceRepository.findByNameContainingIgnoreCase(name);
+        return spaces.stream()
+                .map(transformUtil::convertToSpaceRes)
+                .collect(Collectors.toList());
+    }
+
     public SpaceRes createSpace(SpaceReq space, MultipartFile image, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("spaces", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);

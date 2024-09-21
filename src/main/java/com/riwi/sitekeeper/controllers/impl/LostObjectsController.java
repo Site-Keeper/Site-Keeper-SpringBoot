@@ -27,7 +27,7 @@ import java.util.List;
 public class LostObjectsController {
 
     @Autowired
-    LostObjectsService lostObjectService;
+    LostObjectsService lostObjectsService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Create a new lost object", description = "Creates a new lost object with the given details")
@@ -43,7 +43,7 @@ public class LostObjectsController {
         token = token.substring(7);
         try {
             LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId, status);
-            LostObjectsRes createdLostObject = lostObjectService.createLostObjects(lostObjectReq, image, token);
+            LostObjectsRes createdLostObject = lostObjectsService.createLostObjects(lostObjectReq, image, token);
             return new ResponseEntity<>(createdLostObject, HttpStatus.CREATED);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -55,8 +55,19 @@ public class LostObjectsController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of lost objects")
     public ResponseEntity<List<LostObjectsRes>> getAllLostObjects(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        List<LostObjectsRes> lostObject = lostObjectService.getAllLostObjects(token);
+        List<LostObjectsRes> lostObject = lostObjectsService.getAllLostObjects(token);
         return ResponseEntity.ok(lostObject);
+    }
+
+    @GetMapping("/recently-claimed")
+    @Operation(summary = "Get recently claimed lost objects",
+            description = "Retrieves lost objects with status 'RECLAMADO' and updated within the last 2 days")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of recently claimed lost objects")
+    public ResponseEntity<List<LostObjectsRes>> getRecentlyClaimedObjects(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        List<LostObjectsRes> recentlyClaimedObjects = lostObjectsService.getRecentlyClaimedObjects();
+        return ResponseEntity.ok(recentlyClaimedObjects);
     }
 
     @GetMapping("/{id}")
@@ -65,7 +76,7 @@ public class LostObjectsController {
     @ApiResponse(responseCode = "404", description = "Lost object not found")
     public ResponseEntity<LostObjectsRes> getLostObjectById(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        return lostObjectService.getLostObjectsById(id, token)
+        return lostObjectsService.getLostObjectsById(id, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -86,7 +97,7 @@ public class LostObjectsController {
         token = token.substring(7);
         try {
             LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId, status);
-            LostObjectsRes updatedLostObject = lostObjectService.updateLostObjects(id, lostObjectReq, image, token);
+            LostObjectsRes updatedLostObject = lostObjectsService.updateLostObjects(id, lostObjectReq, image, token);
             return ResponseEntity.ok(updatedLostObject);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -102,7 +113,7 @@ public class LostObjectsController {
     public ResponseEntity<Void> deleteLostObject(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         token = token.substring(7);
         try {
-            lostObjectService.deleteLostObjects(id, token);
+            lostObjectsService.deleteLostObjects(id, token);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

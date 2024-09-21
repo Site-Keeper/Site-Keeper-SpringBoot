@@ -106,6 +106,17 @@ public class SpaceController {
         return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Search spaces by name", description = "Searches for spaces containing the given name string")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of spaces")
+    public ResponseEntity<List<SpaceRes>> searchSpaces(
+            @Parameter(description = "Name to search for") @RequestParam String name,
+            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        List<SpaceRes> spaces = spaceService.getSpacesByName(name, token);
+        return ResponseEntity.ok(spaces);
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a space", description = "Deletes a space by its ID")
     @ApiResponse(responseCode = "204", description = "Space deleted successfully")

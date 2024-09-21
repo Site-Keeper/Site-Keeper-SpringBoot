@@ -18,10 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LostObjectsService {
@@ -56,6 +58,14 @@ public class LostObjectsService {
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
         Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
         return lostObjectsOptional.map(transformUtil::convertToLostObjectsRes);
+    }
+
+    public List<LostObjectsRes> getRecentlyClaimedObjects() {
+        LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+        List<LostObjectsEntity> recentlyClaimedObjects = lostObjectsRepository.findRecentlyClaimedObjects(twoDaysAgo);
+        return recentlyClaimedObjects.stream()
+                .map(transformUtil::convertToLostObjectsRes)
+                .collect(Collectors.toList());
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {
