@@ -42,7 +42,7 @@ public class LostObjectsService {
     private final TransformUtil transformUtil = new TransformUtil();
 
     public List<LostObjectsRes> getAllLostObjects(String token) {
-        ValidationReq validationReq = new ValidationReq("lostObjects    ", "can_read");
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAllByIsDeletedFalse();
