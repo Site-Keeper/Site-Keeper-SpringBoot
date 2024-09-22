@@ -20,6 +20,9 @@ public class LostObjectsImgReq {
     @NotBlank(message = "Description is required")
     private String description;
 
+    @NotBlank(message = "Location is required")
+    private String location;
+
     @NotBlank(message = "Image is required")
     private String image;
 

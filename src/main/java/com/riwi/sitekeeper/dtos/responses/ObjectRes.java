@@ -15,6 +15,8 @@ public class ObjectRes {
 
     private String description;
 
+    private String location;
+
     private String image;
 
     private Long spaceId;

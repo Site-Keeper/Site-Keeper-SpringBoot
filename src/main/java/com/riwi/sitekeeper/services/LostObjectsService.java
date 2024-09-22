@@ -99,6 +99,7 @@ public class LostObjectsService {
         LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
                 lostObjects.getName(),
                 lostObjects.getDescription(),
+                lostObjects.getLocation(),
                 imageUrl,
                 lostObjects.getSpaceId()
         );
@@ -123,6 +124,7 @@ public class LostObjectsService {
 
             existingLostObjects.setName(updatedLostObjects.getName());
             existingLostObjects.setDescription(updatedLostObjects.getDescription());
+            existingLostObjects.setLocation(updatedLostObjects.getLocation());
             existingLostObjects.setUpdatedBy(user.getId());
 
             if (image != null && !image.isEmpty()) {

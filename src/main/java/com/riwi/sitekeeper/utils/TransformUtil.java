@@ -32,6 +32,7 @@ public class TransformUtil {
         return LostObjectsEntity.builder()
                 .name(lostObjectsReq.getName())
                 .description(lostObjectsReq.getDescription())
+                .location(lostObjectsReq.getLocation())
                 .image(lostObjectsReq.getImage())
                 .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).get())
                 .status(LostObjectsStatus.PERDIDO)
@@ -43,6 +44,7 @@ public class TransformUtil {
                 .id(lostObjectsEntity.getId())
                 .name(lostObjectsEntity.getName())
                 .description(lostObjectsEntity.getDescription())
+                .location(lostObjectsEntity.getLocation())
                 .image(lostObjectsEntity.getImage())
                 .spaceId(lostObjectsEntity.getSpaceId().getId())
                 .status(lostObjectsEntity.getStatus())
@@ -52,6 +54,7 @@ public class TransformUtil {
     public void updateLostObjectsEntity(LostObjectsEntity existingLostObjects, LostObjectsImgReq updatedLostObjects) {
         existingLostObjects.setName(updatedLostObjects.getName());
         existingLostObjects.setDescription(updatedLostObjects.getDescription());
+        existingLostObjects.setLocation(updatedLostObjects.getLocation());
         existingLostObjects.setImage(updatedLostObjects.getImage());
         existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).get());
     }
