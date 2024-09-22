@@ -7,11 +7,9 @@ import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsImgReq;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
-import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
-import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
@@ -99,7 +97,6 @@ public class LostObjectsService {
         LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
                 lostObjects.getName(),
                 lostObjects.getDescription(),
-                lostObjects.getLocation(),
                 imageUrl,
                 lostObjects.getSpaceId()
         );
@@ -124,7 +121,6 @@ public class LostObjectsService {
 
             existingLostObjects.setName(updatedLostObjects.getName());
             existingLostObjects.setDescription(updatedLostObjects.getDescription());
-            existingLostObjects.setLocation(updatedLostObjects.getLocation());
             existingLostObjects.setUpdatedBy(user.getId());
 
             if (image != null && !image.isEmpty()) {

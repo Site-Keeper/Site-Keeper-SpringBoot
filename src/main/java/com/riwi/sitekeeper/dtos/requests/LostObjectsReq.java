@@ -21,9 +21,6 @@ public class LostObjectsReq {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @NotBlank(message = "Location is required")
-    private String location;
-
     @NotNull(message = "Space is required")
     private Long spaceId;
 

@@ -21,6 +21,9 @@ public class ObjectReq {
     @NotBlank(message = "Description is required")
     private String description;
 
+    @NotBlank(message = "Image is required")
+    private String image;
+
     @NotNull(message = "Space is required")
     private Long spaceId;
 

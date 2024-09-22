@@ -31,22 +31,23 @@ public class ObjectController {
     @Autowired
     ObjectService objectService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     @Operation(summary = "Create a new object", description = "Creates a new object with the given details")
     @ApiResponse(responseCode = "201", description = "Object created successfully")
     public ResponseEntity<ObjectRes> createObject(
             @Parameter(description = "Name of the object") @RequestParam("name") String name,
             @Parameter(description = "Description of the object") @RequestParam("description") String description,
             @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
-            @Parameter(description = "Image file", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestParam("image") MultipartFile image,
+            @Parameter(description = "Image as a base64 string") @RequestParam("image") String image,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
-        token = token.substring(7);
+
+        token = token.substring(7); // Assuming "Bearer " prefix
         try {
-            ObjectReq objectReq = new ObjectReq(name, description, spaceId);
-            ObjectRes createdObject = objectService.createObject(objectReq, image, token);
+            ObjectReq objectReq = new ObjectReq(name, description, image, spaceId);
+            objectReq.setImage(image); // Assuming you have a setter for the image in ObjectReq
+            ObjectRes createdObject = objectService.createObject(objectReq, token);
             return new ResponseEntity<>(createdObject, HttpStatus.CREATED);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -82,7 +83,7 @@ public class ObjectController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Update an object", description = "Updates an existing object with the given details")
     @ApiResponse(responseCode = "200", description = "Object updated successfully")
     @ApiResponse(responseCode = "404", description = "Object not found")
@@ -91,17 +92,19 @@ public class ObjectController {
             @Parameter(description = "Name of the object") @RequestParam("name") String name,
             @Parameter(description = "Description of the object") @RequestParam("description") String description,
             @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
-            @Parameter(description = "Image file (optional)", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestParam(value = "image", required = false) MultipartFile image,
+            @Parameter(description = "Image as an icon string")
+            @RequestParam(value = "image", required = false) String image,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+
         token = token.substring(7);
         try {
-            ObjectReq objectReq = new ObjectReq(name, description, spaceId);
-            ObjectRes updatedObject = objectService.updateObject(id, objectReq, image, token);
+            ObjectReq objectReq = new ObjectReq(name, description,image , spaceId);
+            objectReq.setImage(image);
+            ObjectRes updatedObject = objectService.updateObject(id, objectReq, token);
             return ResponseEntity.ok(updatedObject);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

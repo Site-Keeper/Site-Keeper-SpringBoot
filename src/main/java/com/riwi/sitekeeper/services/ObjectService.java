@@ -5,15 +5,9 @@ import com.cloudinary.utils.ObjectUtils;
 import com.riwi.sitekeeper.clients.NestServiceClient;
 import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
-import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.requests.ObjectReq;
-import com.riwi.sitekeeper.dtos.requests.SpaceImgReq;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
-import com.riwi.sitekeeper.dtos.responses.ReportRes;
-import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
-import com.riwi.sitekeeper.entitites.ReportEntity;
-import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,22 +57,11 @@ public class ObjectService {
         return objectOptional.map(transformUtil::convertToObjectRes);
     }
 
-    public ObjectRes createObject(ObjectReq object, MultipartFile image, String token) throws IOException {
+    public ObjectRes createObject(ObjectReq object, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("objects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-        String imageUrl = (String) uploadResult.get("url");
-
-        ObjectImgReq imgReq = new ObjectImgReq(
-                object.getName(),
-                object.getDescription(),
-                imageUrl,
-                object.getSpaceId()
-        );
-
-        ObjectEntity newObject = transformUtil.convertToObjectEntity(imgReq);
-        newObject.setImage(imageUrl);
+        ObjectEntity newObject = transformUtil.convertToObjectEntity(object);
         newObject.setCreatedBy(user.getId());
         newObject.setUpdatedBy(user.getId());
 
@@ -86,7 +69,7 @@ public class ObjectService {
         return transformUtil.convertToObjectRes(savedObject);
     }
 
-    public ObjectRes updateObject(Long id, ObjectReq updatedObject, MultipartFile image, String token) throws IOException {
+    public ObjectRes updateObject(Long id, ObjectReq updatedObject, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("objects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
@@ -97,14 +80,8 @@ public class ObjectService {
 
             existingObject.setName(updatedObject.getName());
             existingObject.setDescription(updatedObject.getDescription());
+            existingObject.setImage(updatedObject.getImage());
             existingObject.setUpdatedBy(user.getId());
-
-            // Update image only if a new one is provided
-            if (image != null && !image.isEmpty()) {
-                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-                String imageUrl = (String) uploadResult.get("url");
-                existingObject.setImage(imageUrl);
-            }
 
             ObjectEntity savedObject = objectRepository.save(existingObject);
             return transformUtil.convertToObjectRes(savedObject);
