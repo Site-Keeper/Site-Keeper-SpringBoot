@@ -37,13 +37,12 @@ public class LostObjectsController {
             @Parameter(description = "Name of the lost object") @RequestParam("name") String name,
             @Parameter(description = "Description of the lost object") @RequestParam("description") String description,
             @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
-            @Parameter(description = "Status of the lost object") @RequestParam("status") LostObjectsStatus status,
             @Parameter(description = "Image file", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("image") MultipartFile image,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
         try {
-            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId, status);
+            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId);
             LostObjectsRes createdLostObject = lostObjectsService.createLostObjects(lostObjectReq, image, token);
             return new ResponseEntity<>(createdLostObject, HttpStatus.CREATED);
         } catch (IOException e) {
@@ -108,7 +107,7 @@ public class LostObjectsController {
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
         try {
-            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId, status);
+            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId);
             LostObjectsRes updatedLostObject = lostObjectsService.updateLostObjects(id, lostObjectReq, image, token);
             return ResponseEntity.ok(updatedLostObject);
         } catch (RuntimeException e) {

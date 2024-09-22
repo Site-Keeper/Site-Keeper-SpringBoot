@@ -42,7 +42,7 @@ public class ReportEntity extends Auditable {
     @Column(nullable = false)
     private Long topicId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long userId;
 
     @ManyToOne

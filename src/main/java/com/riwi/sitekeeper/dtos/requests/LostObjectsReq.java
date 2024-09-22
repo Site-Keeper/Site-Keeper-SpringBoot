@@ -24,7 +24,4 @@ public class LostObjectsReq {
     @NotNull(message = "Space is required")
     private Long spaceId;
 
-    @NotNull(message = "Status is required")
-    private LostObjectsStatus status;
-
 }

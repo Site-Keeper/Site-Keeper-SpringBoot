@@ -100,8 +100,7 @@ public class LostObjectsService {
                 lostObjects.getName(),
                 lostObjects.getDescription(),
                 imageUrl,
-                lostObjects.getSpaceId(),
-                lostObjects.getStatus()
+                lostObjects.getSpaceId()
         );
 
         LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostImgReq);
@@ -124,7 +123,6 @@ public class LostObjectsService {
 
             existingLostObjects.setName(updatedLostObjects.getName());
             existingLostObjects.setDescription(updatedLostObjects.getDescription());
-            existingLostObjects.setStatus(updatedLostObjects.getStatus());
             existingLostObjects.setUpdatedBy(user.getId());
 
             if (image != null && !image.isEmpty()) {

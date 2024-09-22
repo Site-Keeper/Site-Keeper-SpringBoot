@@ -9,6 +9,8 @@ import com.riwi.sitekeeper.entitites.LostObjectsEntity;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.entitites.ReportEntity;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
+import com.riwi.sitekeeper.enums.ReportStatus;
 import com.riwi.sitekeeper.services.ObjectService;
 import com.riwi.sitekeeper.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ public class TransformUtil {
                 .description(lostObjectsReq.getDescription())
                 .image(lostObjectsReq.getImage())
                 .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).get())
+                .status(LostObjectsStatus.PERDIDO)
                 .build();
     }
 
@@ -51,7 +54,6 @@ public class TransformUtil {
         existingLostObjects.setDescription(updatedLostObjects.getDescription());
         existingLostObjects.setImage(updatedLostObjects.getImage());
         existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).get());
-        existingLostObjects.setStatus(updatedLostObjects.getStatus());
     }
 
     public ObjectEntity convertToObjectEntity(ObjectImgReq objectReq) {
@@ -89,6 +91,7 @@ public class TransformUtil {
                 .topicId(reportReq.getTopicId())
                 .theDate(reportReq.getTheDate())
                 .spaceId(spaceService.getSpaceById(reportReq.getSpaceId()).get())
+                .status(ReportStatus.PENDING)
                 .build();
     }
 
