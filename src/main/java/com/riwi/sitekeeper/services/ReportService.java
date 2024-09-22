@@ -6,9 +6,11 @@ import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.entitites.ReportEntity;
+import com.riwi.sitekeeper.exceptions.reports.ReportNotFoundException;
 import com.riwi.sitekeeper.repositories.ReportRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,9 +40,9 @@ public class ReportService {
         return reportResList;
     }
 
-    public Optional<ReportRes> getReportById(Long id, String token) {
-        Optional<ReportEntity> reportOptional = reportRepository.findById(id);
-        return reportOptional.map(transformUtil::convertToReportRes);
+    public ReportRes getReportById(Long id, String token) {
+        ReportEntity reportOptional = reportRepository.findById(id).orElseThrow(() -> new ReportNotFoundException("Report could not be found by id"));
+        return  transformUtil.convertToReportRes(reportOptional);
     }
 
     public ReportRes createReport(ReportReq report, String token) {

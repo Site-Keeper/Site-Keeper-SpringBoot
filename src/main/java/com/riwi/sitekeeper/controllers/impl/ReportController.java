@@ -48,9 +48,8 @@ public class ReportController {
     @ApiResponse(responseCode = "404", description = "Report not found")
     public ResponseEntity<ReportRes> getReportById(@PathVariable Long id,@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        return reportService.getReportById(id, token)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        ReportRes report = reportService.getReportById(id, token);
+        return new ResponseEntity<>(report,HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
