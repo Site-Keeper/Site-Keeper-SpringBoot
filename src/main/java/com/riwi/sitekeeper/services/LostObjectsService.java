@@ -9,8 +9,10 @@ import com.riwi.sitekeeper.dtos.requests.LostObjectsImgReq;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
+import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,11 @@ public class LostObjectsService {
     @Autowired
     private Cloudinary cloudinary;
 
-    private final TransformUtil transformUtil = new TransformUtil();
+    private final TransformUtil transformUtil;
+
+    public LostObjectsService(TransformUtil transformUtil) {
+        this.transformUtil = transformUtil;
+    }
 
     public List<LostObjectsRes> getAllLostObjects(String token) {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
@@ -70,6 +76,17 @@ public class LostObjectsService {
         return recentlyClaimedObjects.stream()
                 .map(transformUtil::convertToLostObjectsRes)
                 .collect(Collectors.toList());
+    }
+
+    public LostObjectsSummaryRes getLostObjectsSummary(String token) {
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        long total = lostObjectsRepository.countByIsDeletedFalse();
+        long claimedTotal = lostObjectsRepository.countByStatusAndIsDeletedFalse(LostObjectsStatus.RECLAMADO);
+        long lostTotal = lostObjectsRepository.countByStatusAndIsDeletedFalse(LostObjectsStatus.PERDIDO);
+
+        return new LostObjectsSummaryRes(total, claimedTotal, lostTotal);
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {

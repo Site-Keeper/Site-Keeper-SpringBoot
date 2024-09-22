@@ -12,18 +12,17 @@ import com.riwi.sitekeeper.entitites.SpaceEntity;
 import com.riwi.sitekeeper.services.ObjectService;
 import com.riwi.sitekeeper.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Component
 public class TransformUtil {
 
     @Autowired
     private SpaceService spaceService;
-
-    @Autowired
-    private ObjectService objectService;
 
 
     public LostObjectsEntity convertToLostObjectsEntity(LostObjectsImgReq lostObjectsReq) {
@@ -82,7 +81,7 @@ public class TransformUtil {
     }
 
 
-    public ReportEntity convertToReportEntity(ReportReq reportReq, String token) {
+    public ReportEntity convertToReportEntity(ReportReq reportReq) {
         return ReportEntity.builder()
                 .name(reportReq.getName())
                 .description(reportReq.getDescription())

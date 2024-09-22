@@ -5,7 +5,9 @@ import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
+import com.riwi.sitekeeper.dtos.responses.ReportSummaryRes;
 import com.riwi.sitekeeper.entitites.ReportEntity;
+import com.riwi.sitekeeper.enums.ReportStatus;
 import com.riwi.sitekeeper.repositories.ReportRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,11 @@ public class ReportService {
     @Autowired
     private NestServiceClient nestServiceClient;
 
-    private final TransformUtil transformUtil = new TransformUtil();
+    private final TransformUtil transformUtil;
+
+    public ReportService(TransformUtil transformUtil) {
+        this.transformUtil = transformUtil;
+    }
 
     public List<ReportRes> getAllReports(String token) {
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
@@ -43,10 +49,24 @@ public class ReportService {
         return reportOptional.map(transformUtil::convertToReportRes);
     }
 
+    public ReportSummaryRes getReportSummary(String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        long total = reportRepository.count();
+        long approvedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.APPROVED);
+        long rejectedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.REJECTED);
+        ReportSummaryRes reportSummaryRes = new ReportSummaryRes();
+        reportSummaryRes.setTotal(total);
+        reportSummaryRes.setApprovedTotal(approvedTotal);
+        reportSummaryRes.setRejectedTotal(rejectedTotal);
+        return reportSummaryRes;
+    }
+
     public ReportRes createReport(ReportReq report, String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-        ReportEntity newReport = transformUtil.convertToReportEntity(report, token);
+        ReportEntity newReport = transformUtil.convertToReportEntity(report);
         newReport.setCreatedBy(user.getId());
         newReport.setUpdatedBy(user.getId());
         ReportEntity savedReport = reportRepository.save(newReport);

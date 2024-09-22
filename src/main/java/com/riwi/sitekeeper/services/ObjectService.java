@@ -38,7 +38,11 @@ public class ObjectService {
     @Autowired
     private Cloudinary cloudinary;
 
-    private final TransformUtil transformUtil = new TransformUtil();
+    private final TransformUtil transformUtil;
+
+    public ObjectService(TransformUtil transformUtil) {
+        this.transformUtil = transformUtil;
+    }
 
     public List<ObjectRes> getAllObjects(String token) {
         List<ObjectEntity> objects = objectRepository.findAllByIsDeletedFalse();

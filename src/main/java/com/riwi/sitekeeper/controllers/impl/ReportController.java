@@ -1,11 +1,14 @@
 package com.riwi.sitekeeper.controllers.impl;
 
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
+import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
+import com.riwi.sitekeeper.dtos.responses.ReportSummaryRes;
 import com.riwi.sitekeeper.entitites.ReportEntity;
 import com.riwi.sitekeeper.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/api/reports")
 @Tag(name = "Reports", description = "Reports Controller")
 public class ReportController {
 
@@ -51,6 +54,17 @@ public class ReportController {
         return reportService.getReportById(id, token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/summary")
+    @Operation(summary = "Get reports summary",
+            description = "Retrieves a summary of the total number of reports, including counts for 'APPROVED' and 'REJECTED' statuses, excluding deleted records.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved reports summary", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<ReportSummaryRes> getReportSummary(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        ReportSummaryRes reportSummary = reportService.getReportSummary(token);
+        return ResponseEntity.ok(reportSummary);
     }
 
     @PutMapping("/{id}")

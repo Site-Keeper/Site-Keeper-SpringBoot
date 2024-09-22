@@ -2,6 +2,7 @@ package com.riwi.sitekeeper.controllers.impl;
 
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
+import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.services.LostObjectsService;
@@ -68,6 +69,17 @@ public class LostObjectsController {
         token = token.substring(7);
         List<LostObjectsRes> recentlyClaimedObjects = lostObjectsService.getRecentlyClaimedObjects(token);
         return ResponseEntity.ok(recentlyClaimedObjects);
+    }
+
+    @GetMapping("/summary")
+    @Operation(summary = "Get lost objects summary",
+            description = "Retrieves a summary of the total number of lost objects, including counts for 'PERDIDO' and 'RECLAMADO' statuses, excluding deleted records.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved lost objects summary", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<LostObjectsSummaryRes> getLostObjectSummary(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        LostObjectsSummaryRes lostObjectSummary = lostObjectsService.getLostObjectsSummary(token);
+        return ResponseEntity.ok(lostObjectSummary);
     }
 
     @GetMapping("/{id}")
