@@ -7,17 +7,13 @@ import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.requests.ObjectReq;
-import com.riwi.sitekeeper.dtos.requests.SpaceImgReq;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
-import com.riwi.sitekeeper.dtos.responses.ReportRes;
-import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
-import com.riwi.sitekeeper.entitites.ReportEntity;
-import com.riwi.sitekeeper.entitites.SpaceEntity;
-import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.InvalidFileException;
+import com.riwi.sitekeeper.exceptions.General.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
-import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,26 +58,38 @@ public class ObjectService {
     }
 
     public ObjectRes createObject(ObjectReq object, MultipartFile image, String token) throws IOException {
-        ValidationReq validationReq = new ValidationReq("objects", "can_create");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        try {
+            if (image == null || image.isEmpty()) {
+                throw new InvalidFileException("Image File is Required");
+            }
+            String fileType = image.getContentType();
+            if (fileType == null || !fileType.startsWith("image/")) {
+                throw new InvalidFileException("Invalid file type. Only image files are supported.");
+            }
+            ValidationReq validationReq = new ValidationReq("objects", "can_create");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-        String imageUrl = (String) uploadResult.get("url");
+            Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
 
-        ObjectImgReq imgReq = new ObjectImgReq(
-                object.getName(),
-                object.getDescription(),
-                imageUrl,
-                object.getSpaceId()
-        );
+            ObjectImgReq imgReq = new ObjectImgReq(
+                    object.getName(),
+                    object.getDescription(),
+                    imageUrl,
+                    object.getSpaceId()
+            );
 
-        ObjectEntity newObject = transformUtil.convertToObjectEntity(imgReq);
-        newObject.setImage(imageUrl);
-        newObject.setCreatedBy(user.getId());
-        newObject.setUpdatedBy(user.getId());
+            ObjectEntity newObject = transformUtil.convertToObjectEntity(imgReq);
+            newObject.setImage(imageUrl);
+            newObject.setCreatedBy(user.getId());
+            newObject.setUpdatedBy(user.getId());
 
-        ObjectEntity savedObject = objectRepository.save(newObject);
-        return transformUtil.convertToObjectRes(savedObject);
+            ObjectEntity savedObject = objectRepository.save(newObject);
+            return transformUtil.convertToObjectRes(savedObject);
+
+        } catch (UnauthorizedActionException e) {
+            throw new UnauthorizedActionException("User does not have permission to create Objects");
+        }
     }
 
     public ObjectRes updateObject(Long id, ObjectReq updatedObject, MultipartFile image, String token) throws IOException {

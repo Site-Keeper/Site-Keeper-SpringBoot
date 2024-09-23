@@ -7,12 +7,12 @@ import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsImgReq;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
-import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
-import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
-import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.InvalidFileException;
+import com.riwi.sitekeeper.exceptions.General.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,27 +75,38 @@ public class LostObjectsService {
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {
-        ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        try {
+            if (image == null || image.isEmpty()) {
+                throw new InvalidFileException("Image File is Required");
+            }
+            String fileType = image.getContentType();
+            if (fileType == null || !fileType.startsWith("image/")) {
+                throw new InvalidFileException("Invalid file type. Only image files are supported.");
+            }
+            ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-        String imageUrl = (String) uploadResult.get("url");
+            Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
 
-        LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
-                lostObjects.getName(),
-                lostObjects.getDescription(),
-                imageUrl,
-                lostObjects.getSpaceId(),
-                lostObjects.getStatus()
-        );
+            LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
+                    lostObjects.getName(),
+                    lostObjects.getDescription(),
+                    imageUrl,
+                    lostObjects.getSpaceId(),
+                    lostObjects.getStatus()
+            );
 
-        LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostImgReq);
-        newLostObjects.setImage(imageUrl);
-        newLostObjects.setCreatedBy(user.getId());
-        newLostObjects.setUpdatedBy(user.getId());
+            LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostImgReq);
+            newLostObjects.setImage(imageUrl);
+            newLostObjects.setCreatedBy(user.getId());
+            newLostObjects.setUpdatedBy(user.getId());
 
-        LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
-        return transformUtil.convertToLostObjectsRes(savedLostObjects);
+            LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
+            return transformUtil.convertToLostObjectsRes(savedLostObjects);
+        } catch (UnauthorizedActionException e) {
+            throw new UnauthorizedActionException("User does not have the permission to create Lost Objects");
+        }
     }
 
     public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects, MultipartFile image, String token) throws IOException {

@@ -120,7 +120,7 @@ public class LostObjectsController {
     }
 
   @PutMapping("/{id}/status")
-  @Operation(summary = "Status update", description = "Updates the status of an object")
+  @Operation(summary = "Lost object status update", description = "Updates the status of a lost object")
   @ApiResponse(responseCode = "200", description = "Lost object's status updated successfully")
   @ApiResponse(responseCode = "404", description = "Lost object not found")
     public ResponseEntity<LostObjectsRes> updateStatus(@PathVariable Long id,@Parameter(hidden = true)@RequestHeader("Authorization")String token, @RequestParam LostObjectsStatus status){

@@ -1,4 +1,4 @@
-package com.riwi.sitekeeper.exceptions.reports;
+package com.riwi.sitekeeper.exceptions.General;
 
 import lombok.Data;
 

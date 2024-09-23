@@ -6,8 +6,9 @@ import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.entitites.ReportEntity;
+import com.riwi.sitekeeper.exceptions.General.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.ReportRepository;
-import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.NotFoundException;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,13 +46,17 @@ public class ReportService {
     }
 
     public ReportRes createReport(ReportReq report, String token) {
-        ValidationReq validationReq = new ValidationReq("reports", "can_create");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-        ReportEntity newReport = transformUtil.convertToReportEntity(report, token);
-        newReport.setCreatedBy(user.getId());
-        newReport.setUpdatedBy(user.getId());
-        ReportEntity savedReport = reportRepository.save(newReport);
-        return transformUtil.convertToReportRes(savedReport);
+        try {
+            ValidationReq validationReq = new ValidationReq("reports", "can_create");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+            ReportEntity newReport = transformUtil.convertToReportEntity(report, token);
+            newReport.setCreatedBy(user.getId());
+            newReport.setUpdatedBy(user.getId());
+            ReportEntity savedReport = reportRepository.save(newReport);
+            return transformUtil.convertToReportRes(savedReport);
+        }catch (UnauthorizedActionException e){
+         throw new UnauthorizedActionException("User does not have permission to create a Report");
+        }
     }
 
     public ReportRes updateReport(Long id, ReportReq updatedReport, String token) {

@@ -9,7 +9,9 @@ import com.riwi.sitekeeper.dtos.requests.SpaceImgReq;
 import com.riwi.sitekeeper.dtos.requests.SpaceReq;
 import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
-import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.NotFoundException;
+import com.riwi.sitekeeper.exceptions.General.InvalidFileException;
+import com.riwi.sitekeeper.exceptions.General.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.SpaceRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,27 +80,40 @@ public class SpaceService {
     }
 
     public SpaceRes createSpace(SpaceReq space, MultipartFile image, String token) throws IOException {
-        ValidationReq validationReq = new ValidationReq("spaces", "can_create");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        try{
+            if (image == null || image.isEmpty()) {
+                throw new InvalidFileException("Image File is Required");
+            }
+            String fileType = image.getContentType();
+            if (fileType == null || !fileType.startsWith("image/")) {
+                throw new InvalidFileException("Invalid file type. Only image files are supported.");
+            }
 
-        Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-        String imageUrl = (String) uploadResult.get("url");
+            ValidationReq validationReq = new ValidationReq("spaces", "can_create");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        SpaceImgReq imgReq = new SpaceImgReq(
-                space.getName(),
-                space.getLocation(),
-                space.getDescription(),
-                imageUrl
-        );
+            Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
 
-        SpaceEntity newSpace = transformUtil.convertToSpaceEntity(imgReq);
-        newSpace.setImage(imageUrl);
-        newSpace.setCreatedBy(user.getId());
-        newSpace.setUpdatedBy(user.getId());
+            SpaceImgReq imgReq = new SpaceImgReq(
+                    space.getName(),
+                    space.getLocation(),
+                    space.getDescription(),
+                    imageUrl
+            );
 
-        SpaceEntity savedSpace = spaceRepository.save(newSpace);
-        return transformUtil.convertToSpaceRes(savedSpace);
+            SpaceEntity newSpace = transformUtil.convertToSpaceEntity(imgReq);
+            newSpace.setImage(imageUrl);
+            newSpace.setCreatedBy(user.getId());
+            newSpace.setUpdatedBy(user.getId());
+
+            SpaceEntity savedSpace = spaceRepository.save(newSpace);
+            return transformUtil.convertToSpaceRes(savedSpace);
+        }catch (UnauthorizedActionException e){
+            throw new UnauthorizedActionException("User does not have permission to create spaces");
+        }
     }
+
 
     public SpaceRes updateSpace(Long id, SpaceReq updatedSpace, MultipartFile image, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("spaces", "can_update");

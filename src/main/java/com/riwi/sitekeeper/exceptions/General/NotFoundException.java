@@ -1,4 +1,4 @@
-package com.riwi.sitekeeper.exceptions.reports;
+package com.riwi.sitekeeper.exceptions.General;
 
 public class NotFoundException extends RuntimeException{
     private static final long serialVerisionUID = 1;
