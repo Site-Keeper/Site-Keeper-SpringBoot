@@ -1,10 +1,8 @@
-package com.riwi.sitekeeper.entitites;
+package com.riwi.sitekeeper.entities;
 
 import com.riwi.sitekeeper.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -42,7 +40,10 @@ public class ReportEntity extends Auditable {
     @Column(nullable = false)
     private Long topicId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
+    private String image;
+
+    @Column(nullable = true)
     private Long userId;
 
     @ManyToOne

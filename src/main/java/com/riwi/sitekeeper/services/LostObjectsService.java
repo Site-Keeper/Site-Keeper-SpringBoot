@@ -13,6 +13,12 @@ import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.exceptions.General.NotFoundException;
 import com.riwi.sitekeeper.exceptions.General.InvalidFileException;
 import com.riwi.sitekeeper.exceptions.General.UnauthorizedActionException;
+import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
+import com.riwi.sitekeeper.entities.LostObjectsEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
+import com.riwi.sitekeeper.exceptions.general.InvalidFileException;
+import com.riwi.sitekeeper.exceptions.general.NotFoundException;
+import com.riwi.sitekeeper.exceptions.general.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +47,14 @@ public class LostObjectsService {
     @Autowired
     private Cloudinary cloudinary;
 
-    private final TransformUtil transformUtil = new TransformUtil();
+    private final TransformUtil transformUtil;
+
+    public LostObjectsService(TransformUtil transformUtil) {
+        this.transformUtil = transformUtil;
+    }
 
     public List<LostObjectsRes> getAllLostObjects(String token) {
-        ValidationReq validationReq = new ValidationReq("lostObjects    ", "can_read");
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         List<LostObjectsEntity> lostObjects = lostObjectsRepository.findAllByIsDeletedFalse();
@@ -61,6 +71,7 @@ public class LostObjectsService {
 
         LostObjectsEntity lostObjectsOptional = lostObjectsRepository.findById(id).orElseThrow(()-> new NotFoundException("Lost Object could not be found by id"));
         return transformUtil.convertToLostObjectsRes(lostObjectsOptional);
+
     }
 
     public List<LostObjectsRes> getRecentlyClaimedObjects(String token) {
@@ -74,36 +85,46 @@ public class LostObjectsService {
                 .collect(Collectors.toList());
     }
 
+    public LostObjectsSummaryRes getLostObjectsSummary(String token) {
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        long total = lostObjectsRepository.countByIsDeletedFalse();
+        long claimedTotal = lostObjectsRepository.countByStatusAndIsDeletedFalse(LostObjectsStatus.RECLAMADO);
+        long lostTotal = lostObjectsRepository.countByStatusAndIsDeletedFalse(LostObjectsStatus.PERDIDO);
+
+        return new LostObjectsSummaryRes(total, claimedTotal, lostTotal);
+    }
+
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {
         try {
-            if (image == null || image.isEmpty()) {
-                throw new InvalidFileException("Image File is Required");
-            }
-            String fileType = image.getContentType();
-            if (fileType == null || !fileType.startsWith("image/")) {
-                throw new InvalidFileException("Invalid file type. Only image files are supported.");
-            }
-            ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
-            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+          if (image == null || image.isEmpty()) {
+              throw new InvalidFileException("Image File is Required");
+          }
+          String fileType = image.getContentType();
+          if (fileType == null || !fileType.startsWith("image/")) {
+              throw new InvalidFileException("Invalid file type. Only image files are supported.");
+          }
+          ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
+          ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-            Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-            String imageUrl = (String) uploadResult.get("url");
+          Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+          String imageUrl = (String) uploadResult.get("url");
 
-            LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
-                    lostObjects.getName(),
-                    lostObjects.getDescription(),
-                    imageUrl,
-                    lostObjects.getSpaceId(),
-                    lostObjects.getStatus()
-            );
+          LostObjectsImgReq lostImgReq = new LostObjectsImgReq(
+                  lostObjects.getName(),
+                  lostObjects.getDescription(),
+                  imageUrl,
+                  lostObjects.getSpaceId()
+          );
 
-            LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostImgReq);
-            newLostObjects.setImage(imageUrl);
-            newLostObjects.setCreatedBy(user.getId());
-            newLostObjects.setUpdatedBy(user.getId());
+          LostObjectsEntity newLostObjects = transformUtil.convertToLostObjectsEntity(lostImgReq);
+          newLostObjects.setImage(imageUrl);
+          newLostObjects.setCreatedBy(user.getId());
+          newLostObjects.setUpdatedBy(user.getId());
 
-            LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
-            return transformUtil.convertToLostObjectsRes(savedLostObjects);
+          LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
+          return transformUtil.convertToLostObjectsRes(savedLostObjects);
         } catch (UnauthorizedActionException e) {
             throw new UnauthorizedActionException("User does not have the permission to create Lost Objects");
         }
@@ -120,7 +141,6 @@ public class LostObjectsService {
 
             existingLostObjects.setName(updatedLostObjects.getName());
             existingLostObjects.setDescription(updatedLostObjects.getDescription());
-            existingLostObjects.setStatus(updatedLostObjects.getStatus());
             existingLostObjects.setUpdatedBy(user.getId());
 
             if (image != null && !image.isEmpty()) {
@@ -146,6 +166,9 @@ public class LostObjectsService {
     }
 
     public void deleteLostObjects(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_delete");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         lostObjectsRepository.softDeleteById(id);
     }
 }

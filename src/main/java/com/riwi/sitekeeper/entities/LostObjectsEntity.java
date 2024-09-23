@@ -1,4 +1,4 @@
-package com.riwi.sitekeeper.entitites;
+package com.riwi.sitekeeper.entities;
 
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import jakarta.persistence.*;
@@ -29,8 +29,8 @@ public class LostObjectsEntity extends Auditable {
     private String image;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LostObjectsStatus status;
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PERDIDO'")
+    private LostObjectsStatus status = LostObjectsStatus.PERDIDO;
 
     @Column
     private Long claimedBy;
@@ -38,5 +38,4 @@ public class LostObjectsEntity extends Auditable {
     @ManyToOne
     @JoinColumn(name = "space_id", nullable = false)
     private SpaceEntity spaceId;
-
 }

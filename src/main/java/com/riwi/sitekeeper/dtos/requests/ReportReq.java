@@ -1,18 +1,14 @@
 package com.riwi.sitekeeper.dtos.requests;
 
-import com.riwi.sitekeeper.entitites.SpaceEntity;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ReportReq {
 
     @NotBlank(message = "Name is required")
@@ -27,6 +23,7 @@ public class ReportReq {
     @NotBlank(message = "Topic is required")
     private Long topicId;
 
+    @NotBlank(message = "The Date is required")
     private LocalDateTime theDate;
 
     @NotBlank(message = "Space is required")

@@ -2,15 +2,13 @@ package com.riwi.sitekeeper.controllers.impl;
 
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
-import com.riwi.sitekeeper.entitites.LostObjectsEntity;
-import com.riwi.sitekeeper.enums.LostObjectsStatus;
+import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.services.LostObjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,15 +34,38 @@ public class LostObjectsController {
             @Parameter(description = "Name of the lost object") @RequestParam("name") String name,
             @Parameter(description = "Description of the lost object") @RequestParam("description") String description,
             @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
-            @Parameter(description = "Status of the lost object") @RequestParam("status") LostObjectsStatus status,
             @Parameter(description = "Image file", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("image") MultipartFile image,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
         try {
-            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId, status);
+            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId);
             LostObjectsRes createdLostObject = lostObjectsService.createLostObjects(lostObjectReq, image, token);
             return new ResponseEntity<>(createdLostObject, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update a lost object", description = "Updates an existing lost object with the given details")
+    @ApiResponse(responseCode = "200", description = "Lost object updated successfully")
+    @ApiResponse(responseCode = "404", description = "Lost object not found")
+    public ResponseEntity<LostObjectsRes> updateLostObject(
+            @PathVariable Long id,
+            @Parameter(description = "Name of the lost object") @RequestParam("name") String name,
+            @Parameter(description = "Description of the lost object") @RequestParam("description") String description,
+            @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
+            @Parameter(description = "Image file (optional)", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        try {
+            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId);
+            LostObjectsRes updatedLostObject = lostObjectsService.updateLostObjects(id, lostObjectReq, image, token);
+            return ResponseEntity.ok(updatedLostObject);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -70,6 +91,17 @@ public class LostObjectsController {
         return ResponseEntity.ok(recentlyClaimedObjects);
     }
 
+    @GetMapping("/summary")
+    @Operation(summary = "Get lost objects summary",
+            description = "Retrieves a summary of the total number of lost objects, including counts for 'PERDIDO' and 'RECLAMADO' statuses, excluding deleted records.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved lost objects summary", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<LostObjectsSummaryRes> getLostObjectSummary(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        LostObjectsSummaryRes lostObjectSummary = lostObjectsService.getLostObjectsSummary(token);
+        return ResponseEntity.ok(lostObjectSummary);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get a lost object by ID", description = "Retrieves a lost object by its ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the lost object")
@@ -78,31 +110,6 @@ public class LostObjectsController {
         token = token.substring(7);
         LostObjectsRes lostObjects = lostObjectsService.getLostObjectsById(id, token);
         return new ResponseEntity<>(lostObjects, HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Update a lost object", description = "Updates an existing lost object with the given details")
-    @ApiResponse(responseCode = "200", description = "Lost object updated successfully")
-    @ApiResponse(responseCode = "404", description = "Lost object not found")
-    public ResponseEntity<LostObjectsRes> updateLostObject(
-            @PathVariable Long id,
-            @Parameter(description = "Name of the lost object") @RequestParam("name") String name,
-            @Parameter(description = "Description of the lost object") @RequestParam("description") String description,
-            @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
-            @Parameter(description = "Status of the lost object") @RequestParam("status") LostObjectsStatus status,
-            @Parameter(description = "Image file (optional)", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestParam(value = "image", required = false) MultipartFile image,
-            @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
-        token = token.substring(7);
-        try {
-            LostObjectsReq lostObjectReq = new LostObjectsReq(name, description, spaceId, status);
-            LostObjectsRes updatedLostObject = lostObjectsService.updateLostObjects(id, lostObjectReq, image, token);
-            return ResponseEntity.ok(updatedLostObject);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
     @DeleteMapping("/{id}")

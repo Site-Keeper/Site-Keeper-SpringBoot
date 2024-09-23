@@ -1,11 +1,6 @@
 package com.riwi.sitekeeper.repositories;
 
-import com.riwi.sitekeeper.entitites.ObjectEntity;
-import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.riwi.sitekeeper.entities.ObjectEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

@@ -5,25 +5,25 @@ import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.dtos.responses.SpaceRes;
-import com.riwi.sitekeeper.entitites.LostObjectsEntity;
-import com.riwi.sitekeeper.entitites.ObjectEntity;
-import com.riwi.sitekeeper.entitites.ReportEntity;
-import com.riwi.sitekeeper.entitites.SpaceEntity;
-import com.riwi.sitekeeper.services.ObjectService;
+import com.riwi.sitekeeper.entities.LostObjectsEntity;
+import com.riwi.sitekeeper.entities.ObjectEntity;
+import com.riwi.sitekeeper.entities.ReportEntity;
+import com.riwi.sitekeeper.entities.SpaceEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
+import com.riwi.sitekeeper.enums.ReportStatus;
 import com.riwi.sitekeeper.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Component
 public class TransformUtil {
 
     @Autowired
     private SpaceService spaceService;
-
-    @Autowired
-    private ObjectService objectService;
 
 
     public LostObjectsEntity convertToLostObjectsEntity(LostObjectsImgReq lostObjectsReq) {
@@ -33,6 +33,7 @@ public class TransformUtil {
                 .description(lostObjectsReq.getDescription())
                 .image(lostObjectsReq.getImage())
                 .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).get())
+                .status(LostObjectsStatus.PERDIDO)
                 .build();
     }
 
@@ -53,10 +54,9 @@ public class TransformUtil {
         existingLostObjects.setDescription(updatedLostObjects.getDescription());
         existingLostObjects.setImage(updatedLostObjects.getImage());
         existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).get());
-        existingLostObjects.setStatus(updatedLostObjects.getStatus());
     }
 
-    public ObjectEntity convertToObjectEntity(ObjectImgReq objectReq) {
+    public ObjectEntity convertToObjectEntity(ObjectReq objectReq) {
         return ObjectEntity.builder()
                 .name(objectReq.getName())
                 .description(objectReq.getDescription())
@@ -75,22 +75,24 @@ public class TransformUtil {
                 .build();
     }
 
-    public void updateObjectEntity(ObjectEntity existingObject, ObjectImgReq updatedObject) {
+    public void updateObjectEntity(ObjectEntity existingObject, ObjectReq updatedObject) {
         existingObject.setName(updatedObject.getName());
         existingObject.setDescription(updatedObject.getDescription());
         existingObject.setImage(updatedObject.getImage());
-        existingObject.setSpaceId(spaceService.getSpaceById(updatedObject.getSpaceId()).get());
     }
 
 
-    public ReportEntity convertToReportEntity(ReportReq reportReq, String token) {
+    public ReportEntity convertToReportEntity(ReportImgReq reportImgReq) {
+        System.out.println(reportImgReq);
         return ReportEntity.builder()
-                .name(reportReq.getName())
-                .description(reportReq.getDescription())
-                .isEvent(reportReq.getIsEvent())
-                .topicId(reportReq.getTopicId())
-                .theDate(reportReq.getTheDate())
-                .spaceId(spaceService.getSpaceById(reportReq.getSpaceId()).get())
+                .name(reportImgReq.getName())
+                .description(reportImgReq.getDescription())
+                .isEvent(reportImgReq.getIsEvent())
+                .image(reportImgReq.getImage())
+                .topicId(reportImgReq.getTopicId())
+                .theDate(reportImgReq.getTheDate())
+                .spaceId(spaceService.getSpaceById(reportImgReq.getSpaceId()).get())
+                .status(ReportStatus.PENDING)
                 .build();
     }
 
@@ -100,13 +102,14 @@ public class TransformUtil {
                 .name(reportEntity.getName())
                 .description(reportEntity.getDescription())
                 .isEvent(reportEntity.getIsEvent())
+                .image(reportEntity.getImage())
                 .topicId(reportEntity.getTopicId())
                 .theDate(reportEntity.getTheDate())
                 .spaceId(reportEntity.getSpaceId().getId())
                 .build();
     }
 
-    public void updateReportEntity(ReportEntity existingReport, ReportReq updatedReport) {
+    public void updateReportEntity(ReportEntity existingReport, ReportImgReq updatedReport) {
         existingReport.setName(updatedReport.getName());
         existingReport.setDescription(updatedReport.getDescription());
         existingReport.setIsEvent(updatedReport.getIsEvent());
@@ -145,6 +148,5 @@ public class TransformUtil {
         existingSpace.setName(updatedSpace.getName());
         existingSpace.setLocation(updatedSpace.getLocation());
         existingSpace.setDescription(updatedSpace.getDescription());
-        existingSpace.setImage(updatedSpace.getImage());
     }
 }
