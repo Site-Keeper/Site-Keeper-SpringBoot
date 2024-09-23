@@ -1,5 +1,6 @@
 package com.riwi.sitekeeper.dtos.requests;
 
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

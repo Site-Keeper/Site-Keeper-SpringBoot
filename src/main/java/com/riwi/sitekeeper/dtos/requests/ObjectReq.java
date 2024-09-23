@@ -27,6 +27,7 @@ public class ObjectReq {
     @NotBlank(message = "Image is required")
     private String image;
 
-    @Schema(hidden = true)
+    @Schema(description = "Image filename of the object", example = "chair.jpg")
+    @NotBlank(message = "Image is required")
     private Long spaceId;
 }

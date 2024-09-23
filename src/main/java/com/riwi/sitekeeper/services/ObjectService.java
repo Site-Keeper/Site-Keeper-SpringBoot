@@ -7,6 +7,7 @@ import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ObjectReq;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
 import com.riwi.sitekeeper.entities.ObjectEntity;
+import com.riwi.sitekeeper.exceptions.general.NotFoundException;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,25 +52,23 @@ public class ObjectService {
         ValidationReq validationReq = new ValidationReq("objects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Optional<ObjectEntity> objectOptional = objectRepository.findById(id);
-        return objectOptional.map(transformUtil::convertToObjectRes);
+        ObjectEntity objectOptional = objectRepository.findById(id).orElseThrow(()-> new NotFoundException("Object could not be found by id"));
+
+        return Optional.of(transformUtil.convertToObjectRes(objectOptional));
     }
 
     public Optional<ObjectRes> getObjectByName(String name, String token) {
-        ValidationReq validationReq = new ValidationReq("objects", "can_read");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Optional<ObjectEntity> objectOptional = objectRepository.findByName(name);
-        return objectOptional.map(transformUtil::convertToObjectRes);
+        ObjectEntity objectOptional = objectRepository.findByName(name).orElseThrow(()-> new NotFoundException("Object could not be found by name"));
+
+        return Optional.of(transformUtil.convertToObjectRes(objectOptional));
     }
 
     public ObjectRes createObject(ObjectReq object, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("objects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        System.out.println("RECEIVED OBJECT: " + object);
         ObjectEntity newObject = transformUtil.convertToObjectEntity(object);
-        System.out.println("CONVERTED OBJECT: " + newObject);
         newObject.setCreatedBy(user.getId());
         newObject.setUpdatedBy(user.getId());
 

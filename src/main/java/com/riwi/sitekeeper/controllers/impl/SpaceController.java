@@ -143,10 +143,10 @@ public class SpaceController {
     @Operation(summary = "Search spaces by Search String", description = "Searches for spaces containing the given search string")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of spaces")
     public ResponseEntity<List<SpaceRes>> searchSpaces(
-            @Parameter(description = "Name to search for") @RequestParam String name,
+            @Parameter(description = "String to search for") @RequestParam String search,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        List<SpaceRes> spaces = spaceService.getSpacesByName(name, token);
+        List<SpaceRes> spaces = spaceService.getSpacesBySearch(search, token);
         return ResponseEntity.ok(spaces);
     }
 

@@ -55,7 +55,6 @@ public class LostObjectsController {
             @PathVariable Long id,
             @Parameter(description = "Name of the lost object") @RequestParam("name") String name,
             @Parameter(description = "Description of the lost object") @RequestParam("description") String description,
-            @Parameter(description = "Location of the lost object") @RequestParam("location") String location,
             @Parameter(description = "Space ID") @RequestParam("spaceId") Long spaceId,
             @Parameter(description = "Image file (optional)", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam(value = "image", required = false) MultipartFile image,

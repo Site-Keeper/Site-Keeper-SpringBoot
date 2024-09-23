@@ -11,6 +11,9 @@ import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.entities.LostObjectsEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
+import com.riwi.sitekeeper.exceptions.general.InvalidFileException;
+import com.riwi.sitekeeper.exceptions.general.NotFoundException;
+import com.riwi.sitekeeper.exceptions.general.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +64,8 @@ public class LostObjectsService {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
-        return lostObjectsOptional.map(transformUtil::convertToLostObjectsRes);
+        LostObjectsEntity lostObjectsOptional = lostObjectsRepository.findById(id).orElseThrow(()-> new NotFoundException("Lost Object could not be found by id"));
+        return Optional.of(lostObjectsOptional).map(transformUtil::convertToLostObjectsRes);
     }
 
     public List<LostObjectsRes> getRecentlyClaimedObjects(String token) {
@@ -88,6 +91,14 @@ public class LostObjectsService {
     }
 
     public LostObjectsRes createLostObjects(LostObjectsReq lostObjects, MultipartFile image, String token) throws IOException {
+        try {
+        if (image == null || image.isEmpty()) {
+            throw new InvalidFileException("Image File is Required");
+        }
+        String fileType = image.getContentType();
+        if (fileType == null || !fileType.startsWith("image/")) {
+            throw new InvalidFileException("Invalid file type. Only image files are supported.");
+        }
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
@@ -108,6 +119,9 @@ public class LostObjectsService {
 
         LostObjectsEntity savedLostObjects = lostObjectsRepository.save(newLostObjects);
         return transformUtil.convertToLostObjectsRes(savedLostObjects);
+        } catch (UnauthorizedActionException e) {
+            throw new UnauthorizedActionException("User does not have the permission to create Lost Objects");
+        }
     }
 
     public LostObjectsRes updateLostObjects(Long id, LostObjectsReq updatedLostObjects, MultipartFile image, String token) throws IOException {

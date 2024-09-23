@@ -112,7 +112,6 @@ public class TransformUtil {
         existingReport.setName(updatedReport.getName());
         existingReport.setDescription(updatedReport.getDescription());
         existingReport.setIsEvent(updatedReport.getIsEvent());
-        existingReport.setImage(updatedReport.getImage());
         existingReport.setTopicId(updatedReport.getTopicId());
         existingReport.setTheDate(updatedReport.getTheDate());
         existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).get());
@@ -148,6 +147,5 @@ public class TransformUtil {
         existingSpace.setName(updatedSpace.getName());
         existingSpace.setLocation(updatedSpace.getLocation());
         existingSpace.setDescription(updatedSpace.getDescription());
-        existingSpace.setImage(updatedSpace.getImage());
     }
 }
