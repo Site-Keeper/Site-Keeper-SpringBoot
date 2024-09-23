@@ -19,6 +19,8 @@ public class ReportRes {
 
     private Boolean isEvent;
 
+    private String image;
+
     private Long topicId;
 
     private LocalDateTime theDate;

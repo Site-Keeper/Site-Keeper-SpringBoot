@@ -140,7 +140,7 @@ public class SpaceController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Search spaces by name", description = "Searches for spaces containing the given name string")
+    @Operation(summary = "Search spaces by Search String", description = "Searches for spaces containing the given search string")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of spaces")
     public ResponseEntity<List<SpaceRes>> searchSpaces(
             @Parameter(description = "Name to search for") @RequestParam String name,
