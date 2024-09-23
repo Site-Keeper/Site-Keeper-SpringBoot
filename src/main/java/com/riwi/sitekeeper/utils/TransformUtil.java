@@ -5,13 +5,12 @@ import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.dtos.responses.SpaceRes;
-import com.riwi.sitekeeper.entitites.LostObjectsEntity;
-import com.riwi.sitekeeper.entitites.ObjectEntity;
-import com.riwi.sitekeeper.entitites.ReportEntity;
-import com.riwi.sitekeeper.entitites.SpaceEntity;
+import com.riwi.sitekeeper.entities.LostObjectsEntity;
+import com.riwi.sitekeeper.entities.ObjectEntity;
+import com.riwi.sitekeeper.entities.ReportEntity;
+import com.riwi.sitekeeper.entities.SpaceEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.enums.ReportStatus;
-import com.riwi.sitekeeper.services.ObjectService;
 import com.riwi.sitekeeper.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -79,7 +78,6 @@ public class TransformUtil {
         existingObject.setName(updatedObject.getName());
         existingObject.setDescription(updatedObject.getDescription());
         existingObject.setImage(updatedObject.getImage());
-        existingObject.setSpaceId(spaceService.getSpaceById(updatedObject.getSpaceId()).get());
     }
 
 

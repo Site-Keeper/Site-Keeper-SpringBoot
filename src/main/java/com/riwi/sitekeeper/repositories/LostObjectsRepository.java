@@ -1,6 +1,6 @@
 package com.riwi.sitekeeper.repositories;
 
-import com.riwi.sitekeeper.entitites.LostObjectsEntity;
+import com.riwi.sitekeeper.entities.LostObjectsEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

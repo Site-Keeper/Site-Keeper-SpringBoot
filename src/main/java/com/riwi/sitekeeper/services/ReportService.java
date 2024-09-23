@@ -6,7 +6,7 @@ import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.dtos.responses.ReportSummaryRes;
-import com.riwi.sitekeeper.entitites.ReportEntity;
+import com.riwi.sitekeeper.entities.ReportEntity;
 import com.riwi.sitekeeper.enums.ReportStatus;
 import com.riwi.sitekeeper.repositories.ReportRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;

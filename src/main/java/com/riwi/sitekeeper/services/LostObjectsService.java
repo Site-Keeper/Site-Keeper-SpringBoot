@@ -9,7 +9,7 @@ import com.riwi.sitekeeper.dtos.requests.LostObjectsImgReq;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
-import com.riwi.sitekeeper.entitites.LostObjectsEntity;
+import com.riwi.sitekeeper.entities.LostObjectsEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;

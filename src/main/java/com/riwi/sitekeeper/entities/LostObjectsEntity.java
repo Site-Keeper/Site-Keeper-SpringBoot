@@ -1,4 +1,4 @@
-package com.riwi.sitekeeper.entitites;
+package com.riwi.sitekeeper.entities;
 
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import jakarta.persistence.*;

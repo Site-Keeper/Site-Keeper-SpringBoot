@@ -1,10 +1,8 @@
 package com.riwi.sitekeeper.controllers.impl;
 
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
-import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.dtos.responses.ReportSummaryRes;
-import com.riwi.sitekeeper.entitites.ReportEntity;
 import com.riwi.sitekeeper.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

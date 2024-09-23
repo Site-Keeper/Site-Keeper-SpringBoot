@@ -8,7 +8,7 @@ import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.SpaceImgReq;
 import com.riwi.sitekeeper.dtos.requests.SpaceReq;
 import com.riwi.sitekeeper.dtos.responses.SpaceRes;
-import com.riwi.sitekeeper.entitites.SpaceEntity;
+import com.riwi.sitekeeper.entities.SpaceEntity;
 import com.riwi.sitekeeper.repositories.SpaceRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;

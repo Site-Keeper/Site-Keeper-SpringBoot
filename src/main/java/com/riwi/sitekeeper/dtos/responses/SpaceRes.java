@@ -1,6 +1,5 @@
 package com.riwi.sitekeeper.dtos.responses;
 
-import com.riwi.sitekeeper.entitites.ObjectEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

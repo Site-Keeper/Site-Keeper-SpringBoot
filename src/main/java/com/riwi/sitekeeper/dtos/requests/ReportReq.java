@@ -1,6 +1,5 @@
 package com.riwi.sitekeeper.dtos.requests;
 
-import com.riwi.sitekeeper.entitites.SpaceEntity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

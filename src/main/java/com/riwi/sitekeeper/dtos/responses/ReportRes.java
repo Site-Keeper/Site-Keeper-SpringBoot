@@ -1,6 +1,5 @@
 package com.riwi.sitekeeper.dtos.responses;
 
-import com.riwi.sitekeeper.entitites.SpaceEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;

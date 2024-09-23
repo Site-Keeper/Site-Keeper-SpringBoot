@@ -1,23 +1,20 @@
 package com.riwi.sitekeeper.services;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.riwi.sitekeeper.clients.NestServiceClient;
 import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ObjectReq;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
-import com.riwi.sitekeeper.entitites.ObjectEntity;
+import com.riwi.sitekeeper.entities.ObjectEntity;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -61,7 +58,9 @@ public class ObjectService {
         ValidationReq validationReq = new ValidationReq("objects", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
+        System.out.println("RECEIVED OBJECT: " + object);
         ObjectEntity newObject = transformUtil.convertToObjectEntity(object);
+        System.out.println("CONVERTED OBJECT: " + newObject);
         newObject.setCreatedBy(user.getId());
         newObject.setUpdatedBy(user.getId());
 
