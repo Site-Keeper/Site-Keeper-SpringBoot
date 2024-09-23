@@ -14,8 +14,10 @@ import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
 import com.riwi.sitekeeper.entitites.ReportEntity;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
+import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,9 +51,9 @@ public class ObjectService {
         return objectResList;
     }
 
-    public Optional<ObjectRes> getObjectById(Long id, String token) {
-        Optional<ObjectEntity> objectOptional = objectRepository.findById(id);
-        return objectOptional.map(transformUtil::convertToObjectRes);
+    public ObjectRes getObjectById(Long id, String token) {
+        ObjectEntity object = objectRepository.findById(id).orElseThrow(()-> new NotFoundException("Object could not be found by id"));
+        return transformUtil.convertToObjectRes(object);
     }
 
     public Optional<ObjectRes> getObjectByName(String name, String token) {

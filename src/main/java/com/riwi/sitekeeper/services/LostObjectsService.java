@@ -11,6 +11,7 @@ import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
+import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +54,12 @@ public class LostObjectsService {
         return lostObjectsResList;
     }
 
-    public Optional<LostObjectsRes> getLostObjectsById(Long id, String token) {
+    public LostObjectsRes getLostObjectsById(Long id, String token) {
         ValidationReq validationReq = new ValidationReq("lostObjects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Optional<LostObjectsEntity> lostObjectsOptional = lostObjectsRepository.findById(id);
-        return lostObjectsOptional.map(transformUtil::convertToLostObjectsRes);
+        LostObjectsEntity lostObjectsOptional = lostObjectsRepository.findById(id).orElseThrow(()-> new NotFoundException("Lost Object could not be found by id"));
+        return transformUtil.convertToLostObjectsRes(lostObjectsOptional);
     }
 
     public List<LostObjectsRes> getRecentlyClaimedObjects(String token) {

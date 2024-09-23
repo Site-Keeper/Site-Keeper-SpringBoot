@@ -66,9 +66,8 @@ public class ObjectController {
     @ApiResponse(responseCode = "404", description = "Object not found")
     public ResponseEntity<ObjectRes> getObjectById(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        return objectService.getObjectById(id, token)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        ObjectRes objectRes = objectService.getObjectById(id,token);
+        return new ResponseEntity<>(objectRes, HttpStatus.OK);
     }
 
     @GetMapping("/name/{name}")

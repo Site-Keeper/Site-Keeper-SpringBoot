@@ -91,8 +91,8 @@ public class SpaceController {
     @ApiResponse(responseCode = "404", description = "Unable to find Space with the Id provided")
     public ResponseEntity<SpaceRes> getSpaceById(@PathVariable Long id, @Parameter(hidden = true) @RequestHeader("Authorization") String token){
         token = token.substring(7);
-        Optional<SpaceRes> space = spaceService.getSpaceById(id, token);
-        return space.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        SpaceRes space = spaceService.getSpaceById(id, token);
+        return new ResponseEntity<>(space, HttpStatus.OK);
     }
 
     @GetMapping("/name/{name}")

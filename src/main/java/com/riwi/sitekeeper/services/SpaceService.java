@@ -9,6 +9,7 @@ import com.riwi.sitekeeper.dtos.requests.SpaceImgReq;
 import com.riwi.sitekeeper.dtos.requests.SpaceReq;
 import com.riwi.sitekeeper.dtos.responses.SpaceRes;
 import com.riwi.sitekeeper.entitites.SpaceEntity;
+import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
 import com.riwi.sitekeeper.repositories.SpaceRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +47,12 @@ public class SpaceService {
         return spaceResList;
     }
 
-    public Optional<SpaceRes> getSpaceById(Long id, String token) {
+    public SpaceRes getSpaceById(Long id, String token) {
         ValidationReq validationReq = new ValidationReq("spaces", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-        Optional<SpaceEntity> spaceOptional = spaceRepository.findById(id);
-        return spaceOptional.map(transformUtil::convertToSpaceRes);
+        SpaceEntity space = spaceRepository.findById(id).orElseThrow(()->new NotFoundException("Space could not be found by id"));
+        return transformUtil.convertToSpaceRes(space);
     }
 
     public Optional<SpaceEntity> getSpaceById(Long id) {

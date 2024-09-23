@@ -11,8 +11,8 @@ import java.util.Date;
 @ControllerAdvice
 public class GlobalExeptionHandler {
 
-   @ExceptionHandler(ReportNotFoundException.class)
-   public ResponseEntity<ErrorObject> handleReportNotFoundException(ReportNotFoundException e, WebRequest request){
+   @ExceptionHandler(NotFoundException.class)
+   public ResponseEntity<ErrorObject> handleReportNotFoundException(NotFoundException e, WebRequest request){
        ErrorObject errorObject = new ErrorObject();
 
        errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());

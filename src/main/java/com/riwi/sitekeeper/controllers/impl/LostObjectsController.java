@@ -76,9 +76,8 @@ public class LostObjectsController {
     @ApiResponse(responseCode = "404", description = "Lost object not found")
     public ResponseEntity<LostObjectsRes> getLostObjectById(@PathVariable Long id,@Parameter(hidden = true)  @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        return lostObjectsService.getLostObjectsById(id, token)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        LostObjectsRes lostObjects = lostObjectsService.getLostObjectsById(id, token);
+        return new ResponseEntity<>(lostObjects, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
