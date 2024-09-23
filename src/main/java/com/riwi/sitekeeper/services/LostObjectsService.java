@@ -11,6 +11,7 @@ import com.riwi.sitekeeper.dtos.requests.ObjectImgReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.entitites.LostObjectsEntity;
 import com.riwi.sitekeeper.entitites.ObjectEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.exceptions.reports.NotFoundException;
 import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
@@ -122,6 +123,15 @@ public class LostObjectsService {
         } else {
             throw new RuntimeException("LostObjects not found with id: " + id);
         }
+    }
+
+    public LostObjectsRes updateStatus(Long id, LostObjectsStatus newStatus, String token){
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_update");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        LostObjectsEntity lostObject = lostObjectsRepository.findById(id).orElseThrow(()->new NotFoundException("Lost object could not be found"));
+        lostObject.setStatus(newStatus);
+        lostObjectsRepository.save(lostObject);
+        return transformUtil.convertToLostObjectsRes(lostObject);
     }
 
     public void deleteLostObjects(Long id, String token) {
