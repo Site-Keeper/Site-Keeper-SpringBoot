@@ -81,14 +81,16 @@ public class TransformUtil {
     }
 
 
-    public ReportEntity convertToReportEntity(ReportReq reportReq) {
+    public ReportEntity convertToReportEntity(ReportImgReq reportImgReq) {
+        System.out.println(reportImgReq);
         return ReportEntity.builder()
-                .name(reportReq.getName())
-                .description(reportReq.getDescription())
-                .isEvent(reportReq.getIsEvent())
-                .topicId(reportReq.getTopicId())
-                .theDate(reportReq.getTheDate())
-                .spaceId(spaceService.getSpaceById(reportReq.getSpaceId()).get())
+                .name(reportImgReq.getName())
+                .description(reportImgReq.getDescription())
+                .isEvent(reportImgReq.getIsEvent())
+                .image(reportImgReq.getImage())
+                .topicId(reportImgReq.getTopicId())
+                .theDate(reportImgReq.getTheDate())
+                .spaceId(spaceService.getSpaceById(reportImgReq.getSpaceId()).get())
                 .status(ReportStatus.PENDING)
                 .build();
     }
@@ -99,16 +101,18 @@ public class TransformUtil {
                 .name(reportEntity.getName())
                 .description(reportEntity.getDescription())
                 .isEvent(reportEntity.getIsEvent())
+                .image(reportEntity.getImage())
                 .topicId(reportEntity.getTopicId())
                 .theDate(reportEntity.getTheDate())
                 .spaceId(reportEntity.getSpaceId().getId())
                 .build();
     }
 
-    public void updateReportEntity(ReportEntity existingReport, ReportReq updatedReport) {
+    public void updateReportEntity(ReportEntity existingReport, ReportImgReq updatedReport) {
         existingReport.setName(updatedReport.getName());
         existingReport.setDescription(updatedReport.getDescription());
         existingReport.setIsEvent(updatedReport.getIsEvent());
+        existingReport.setImage(updatedReport.getImage());
         existingReport.setTopicId(updatedReport.getTopicId());
         existingReport.setTheDate(updatedReport.getTheDate());
         existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).get());

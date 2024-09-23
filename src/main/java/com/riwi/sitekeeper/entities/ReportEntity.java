@@ -41,6 +41,9 @@ public class ReportEntity extends Auditable {
     private Long topicId;
 
     @Column(nullable = true)
+    private String image;
+
+    @Column(nullable = true)
     private Long userId;
 
     @ManyToOne
