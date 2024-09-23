@@ -4,11 +4,15 @@ import com.riwi.sitekeeper.entities.ReportEntity;
 import com.riwi.sitekeeper.enums.ReportStatus;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ReportRepository extends BaseRepository<ReportEntity> {
 
     long countByIsDeletedFalse();
 
     long countByStatusAndIsDeletedFalse(ReportStatus status);
+
+    List<ReportEntity> findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
 
 }

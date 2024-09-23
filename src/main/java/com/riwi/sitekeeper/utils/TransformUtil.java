@@ -44,6 +44,7 @@ public class TransformUtil {
                 .description(lostObjectsEntity.getDescription())
                 .image(lostObjectsEntity.getImage())
                 .spaceId(lostObjectsEntity.getSpaceId().getId())
+                .location(lostObjectsEntity.getSpaceId().getLocation())
                 .status(lostObjectsEntity.getStatus())
                 .build();
     }

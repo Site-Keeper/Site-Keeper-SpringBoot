@@ -59,6 +59,19 @@ public class ReportService {
         return reportResList;
     }
 
+    public Optional<List<ReportRes>> getLastReports(String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<ReportEntity> reports = reportRepository.findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            reportResList.add(transformUtil.convertToReportRes(report));
+        }
+        return Optional.of(reportResList);
+
+    }
+
     public Optional<ReportRes> getReportById(Long id, String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);

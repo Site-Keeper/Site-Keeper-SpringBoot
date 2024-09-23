@@ -22,6 +22,8 @@ public class LostObjectsRes {
 
     private Long spaceId;
 
+    private String location;
+
     private LostObjectsStatus status;
 
 }

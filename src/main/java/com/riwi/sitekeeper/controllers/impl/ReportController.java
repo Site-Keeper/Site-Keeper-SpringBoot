@@ -88,6 +88,15 @@ public class ReportController {
         return ResponseEntity.ok(reports);
     }
 
+    @GetMapping("/last")
+    @Operation(summary = "Get latest reports", description = "Retrieves the latest reports")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of latest reports")
+    public ResponseEntity<List<ReportRes>> getLatestReports(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        List<ReportRes> reports = reportService.getLastReports(token).get();
+        return ResponseEntity.ok(reports);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get a report by ID", description = "Retrieves a report by its ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the report")
