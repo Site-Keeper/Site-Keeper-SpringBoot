@@ -45,6 +45,9 @@ public class ReportService {
     }
 
     public List<ReportRes> getAllReports(String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
@@ -54,6 +57,9 @@ public class ReportService {
     }
 
     public Optional<ReportRes> getReportById(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         Optional<ReportEntity> reportOptional = reportRepository.findById(id);
         return reportOptional.map(transformUtil::convertToReportRes);
     }
@@ -75,6 +81,7 @@ public class ReportService {
     public ReportRes createReport(ReportReq report, MultipartFile image, String token) throws IOException {
         ValidationReq validationReq = new ValidationReq("reports", "can_create");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         String imageUrl;
 
         ReportImgReq reportImgReq = ReportImgReq.builder()
@@ -105,7 +112,7 @@ public class ReportService {
     }
 
     public ReportRes updateReport(Long id, ReportReq updatedReport, MultipartFile image, String token) throws IOException {
-        ValidationReq validationReq = new ValidationReq("reports", "can_create");
+        ValidationReq validationReq = new ValidationReq("reports", "can_update");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         Optional<ReportEntity> existingReportOptional = reportRepository.findById(id);
@@ -139,6 +146,9 @@ public class ReportService {
     }
 
     public void deleteReport(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_delete");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         reportRepository.softDeleteById(id);
     }
 }

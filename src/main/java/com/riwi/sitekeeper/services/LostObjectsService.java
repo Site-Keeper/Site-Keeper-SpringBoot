@@ -137,6 +137,9 @@ public class LostObjectsService {
     }
 
     public void deleteLostObjects(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_delete");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         lostObjectsRepository.softDeleteById(id);
     }
 }

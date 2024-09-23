@@ -36,6 +36,9 @@ public class ObjectService {
     }
 
     public List<ObjectRes> getAllObjects(String token) {
+        ValidationReq validationReq = new ValidationReq("objects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         List<ObjectEntity> objects = objectRepository.findAllByIsDeletedFalse();
         List<ObjectRes> objectResList = new ArrayList<>();
         for (ObjectEntity object : objects) {
@@ -45,11 +48,17 @@ public class ObjectService {
     }
 
     public Optional<ObjectRes> getObjectById(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("objects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         Optional<ObjectEntity> objectOptional = objectRepository.findById(id);
         return objectOptional.map(transformUtil::convertToObjectRes);
     }
 
     public Optional<ObjectRes> getObjectByName(String name, String token) {
+        ValidationReq validationReq = new ValidationReq("objects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         Optional<ObjectEntity> objectOptional = objectRepository.findByName(name);
         return objectOptional.map(transformUtil::convertToObjectRes);
     }
@@ -69,7 +78,7 @@ public class ObjectService {
     }
 
     public ObjectRes updateObject(Long id, ObjectReq updatedObject, String token) throws IOException {
-        ValidationReq validationReq = new ValidationReq("objects", "can_create");
+        ValidationReq validationReq = new ValidationReq("objects", "can_update");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         Optional<ObjectEntity> existingObjectOptional = objectRepository.findById(id);
@@ -90,6 +99,9 @@ public class ObjectService {
     }
 
     public void deleteObject(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("objects", "can_delete");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
         objectRepository.softDeleteById(id);
     }
 }
