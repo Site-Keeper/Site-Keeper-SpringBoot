@@ -105,6 +105,7 @@ public class TransformUtil {
                 .image(reportEntity.getImage())
                 .topicId(reportEntity.getTopicId())
                 .theDate(reportEntity.getTheDate())
+                .status(reportEntity.getStatus())
                 .spaceId(reportEntity.getSpaceId().getId())
                 .build();
     }

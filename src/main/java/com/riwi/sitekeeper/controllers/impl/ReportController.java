@@ -4,6 +4,7 @@ import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.requests.SpaceReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
 import com.riwi.sitekeeper.dtos.responses.ReportSummaryRes;
+import com.riwi.sitekeeper.enums.ReportStatus;
 import com.riwi.sitekeeper.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -131,5 +132,15 @@ public class ReportController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/{id}/status")
+    @Operation(summary = "Report status update", description = "Updates the status of a report")
+    @ApiResponse(responseCode = "200", description = "Report's status updated successfully")
+    @ApiResponse(responseCode = "404", description = "Report not found")
+    public ResponseEntity<ReportRes> updateStatus(@PathVariable Long id, @Parameter(hidden = true)@RequestHeader("Authorization")String token, @RequestParam ReportStatus status){
+        token = token.substring(7);
+        ReportRes updatedStatus = reportService.updateStatus(id, status, token);
+        return new ResponseEntity<>(updatedStatus, HttpStatus.OK);
     }
 }

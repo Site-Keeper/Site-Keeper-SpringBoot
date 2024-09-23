@@ -1,5 +1,6 @@
 package com.riwi.sitekeeper.dtos.responses;
 
+import com.riwi.sitekeeper.enums.ReportStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class ReportRes {
     private String image;
 
     private Long topicId;
+
+    private ReportStatus status;
 
     private LocalDateTime theDate;
 

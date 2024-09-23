@@ -169,6 +169,14 @@ public class ReportService {
         }
     }
 
+    public ReportRes updateStatus(Long id, ReportStatus newStatus, String token){
+        ValidationReq validationReq = new ValidationReq("reports", "can_update");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        ReportEntity report = reportRepository.findById(id).orElseThrow(()->new NotFoundException("Report could not be found by id"));
+        report.setStatus(newStatus);
+        reportRepository.save(report);
+        return transformUtil.convertToReportRes(report);
+    }
     public void deleteReport(Long id, String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_delete");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
