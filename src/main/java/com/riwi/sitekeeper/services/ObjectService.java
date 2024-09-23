@@ -58,6 +58,8 @@ public class ObjectService {
     }
 
     public Optional<ObjectRes> getObjectByName(String name, String token) {
+        ValidationReq validationReq = new ValidationReq("objects", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         ObjectEntity objectOptional = objectRepository.findByName(name).orElseThrow(()-> new NotFoundException("Object could not be found by name"));
 
