@@ -3,6 +3,7 @@ package com.riwi.sitekeeper.controllers.impl;
 import com.riwi.sitekeeper.dtos.requests.LostObjectsReq;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsSummaryRes;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.services.LostObjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -127,4 +128,13 @@ public class LostObjectsController {
         }
     }
 
+    @PutMapping("/{id}/status")
+    @Operation(summary = "Lost object status update", description = "Updates the status of a lost object")
+    @ApiResponse(responseCode = "200", description = "Lost object's status updated successfully")
+    @ApiResponse(responseCode = "404", description = "Lost object not found")
+    public ResponseEntity<LostObjectsRes> updateStatus(@PathVariable Long id,@Parameter(hidden = true)@RequestHeader("Authorization")String token, @RequestParam LostObjectsStatus status){
+        token = token.substring(7);
+        LostObjectsRes updatedStatus = lostObjectsService.updateStatus(id, status, token);
+        return new ResponseEntity<>(updatedStatus, HttpStatus.OK);
+    }
 }

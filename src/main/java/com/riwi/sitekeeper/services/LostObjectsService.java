@@ -156,4 +156,13 @@ public class LostObjectsService {
 
         lostObjectsRepository.softDeleteById(id);
     }
+
+    public LostObjectsRes updateStatus(Long id, LostObjectsStatus newStatus, String token){
+        ValidationReq validationReq = new ValidationReq("lostObjects", "can_update");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        LostObjectsEntity lostObject = lostObjectsRepository.findById(id).orElseThrow(()->new NotFoundException("Lost object could not be found"));
+        lostObject.setStatus(newStatus);
+        lostObjectsRepository.save(lostObject);
+        return transformUtil.convertToLostObjectsRes(lostObject);
+    }
 }
