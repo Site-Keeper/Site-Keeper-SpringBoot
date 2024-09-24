@@ -170,7 +170,7 @@ public class ReportService {
 
         ReportEntity reportOptional = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Report could not be found by id"));
 
-        TopicRes topic = getTopic(id, token);
+        TopicRes topic = getTopic(reportOptional.getTopicId(), token);
         ReportRes reportRes = transformUtil.convertToReportRes(reportOptional);
         reportRes.setTopicName(topic.getName());
 

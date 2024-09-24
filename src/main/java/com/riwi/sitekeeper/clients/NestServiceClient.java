@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
 
 @Component
 public class NestServiceClient {
@@ -52,24 +56,31 @@ public class NestServiceClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        HttpEntity<Long> entity = new HttpEntity<>(headers);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         String url = nestServiceUrl + "/topic/" + id;
 
-        ResponseEntity<ApiResponse<TopicRes>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
+        try {
+            ResponseEntity<ApiResponse<TopicRes>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<>() {}
+            );
 
-        if (response.getBody() != null && response.getBody().getData() != null) {
-            return response.getBody().getData();
-        } else {
-            throw new RuntimeException("Failed to retrieve topic data");
+            System.out.println(response.getBody());
+            if (response.getBody() != null && response.getBody().getData() != null) {
+                return response.getBody().getData();
+            } else {
+                throw new RuntimeException("Failed to retrieve topic data");
+            }
+
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new RuntimeException("Error during GET request: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
-
     }
+
 
 }
