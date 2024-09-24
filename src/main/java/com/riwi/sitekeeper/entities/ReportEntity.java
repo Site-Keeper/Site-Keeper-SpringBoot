@@ -47,7 +47,12 @@ public class ReportEntity extends Auditable {
     private Long userId;
 
     @ManyToOne
-    @JoinColumn(name = "space_id",nullable = false)
+    @JoinColumn(name = "space_id", nullable = false)
     private SpaceEntity spaceId;
+
+    @ManyToOne
+    @JoinColumn(name = "object_id", nullable = true)
+    private ObjectEntity objectId;
+
 
 }

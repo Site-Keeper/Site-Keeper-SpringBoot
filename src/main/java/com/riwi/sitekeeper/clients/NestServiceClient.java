@@ -1,9 +1,10 @@
 package com.riwi.sitekeeper.clients;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.riwi.sitekeeper.dtos.nest.requests.TopicReq;
 import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
 import com.riwi.sitekeeper.dtos.nest.responses.ApiResponse;
-import com.riwi.sitekeeper.dtos.nest.responses.ValidationRes;
+import com.riwi.sitekeeper.dtos.nest.responses.TopicRes;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +38,7 @@ public class NestServiceClient {
                 url,
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<ApiResponse<ValidationUserRes>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         if (response.getBody() != null && response.getBody().getData() != null) {
@@ -46,4 +47,29 @@ public class NestServiceClient {
             throw new RuntimeException("Failed to retrieve user data");
         }
     }
+
+    public TopicRes getTopicById(Long id, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Long> entity = new HttpEntity<>(headers);
+
+        String url = nestServiceUrl + "/topic/" + id;
+
+        ResponseEntity<ApiResponse<TopicRes>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        if (response.getBody() != null && response.getBody().getData() != null) {
+            return response.getBody().getData();
+        } else {
+            throw new RuntimeException("Failed to retrieve topic data");
+        }
+
+    }
+
 }

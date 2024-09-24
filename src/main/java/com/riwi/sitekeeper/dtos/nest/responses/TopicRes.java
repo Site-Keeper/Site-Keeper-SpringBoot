@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValidationRes {
+public class TopicRes {
 
-    private Long statusCode;
+    private Long id;
 
-    private ValidationUserRes data;
+    private String name;
 
 }

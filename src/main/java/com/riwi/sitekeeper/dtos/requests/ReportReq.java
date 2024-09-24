@@ -29,4 +29,6 @@ public class ReportReq {
     @NotBlank(message = "Space is required")
     private Long spaceId;
 
+    private Long objectId;
+
 }

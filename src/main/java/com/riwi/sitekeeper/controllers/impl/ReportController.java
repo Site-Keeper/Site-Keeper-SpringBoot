@@ -42,11 +42,12 @@ public class ReportController {
             @Parameter(description = "The Date of the report")
             @RequestParam(value = "theDate", defaultValue = "2024-09-22T21:30:00") String theDate,
             @Parameter(description = "Space ID of the report") @RequestParam("spaceId") Long spaceId,
+            @Parameter(description = "Object ID of the report") @RequestParam(name = "objectId", required = false) Long objectId,
             @Parameter(description = "Image file", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE), required = false)
             @RequestParam(name = "image", required = false) MultipartFile image,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         try {
-            ReportReq report = ReportReq.builder().name(name).description(description).isEvent(isEvent).topicId(topicId).theDate(LocalDateTime.parse(theDate)).spaceId(spaceId).build();
+            ReportReq report = ReportReq.builder().name(name).description(description).isEvent(isEvent).topicId(topicId).theDate(LocalDateTime.parse(theDate)).spaceId(spaceId).objectId(objectId).build();
             token = token.substring(7);
             return ResponseEntity.ok(reportService.createReport(report, image, token));
         } catch (IOException e) {
@@ -67,12 +68,13 @@ public class ReportController {
             @Parameter(description = "The Date of the report")
             @RequestParam(value = "theDate", defaultValue = "2024-09-22T21:30:00") String theDate,
             @Parameter(description = "Space ID of the report") @RequestParam("spaceId") Long spaceId,
+            @Parameter(description = "Object ID of the report") @RequestParam(name = "objectId", required = false) Long objectId,
             @Parameter(description = "Image file", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE), required = false)
             @RequestParam(name = "image", required = false) MultipartFile image,
             @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
         try {
-            ReportReq report = ReportReq.builder().name(name).description(description).isEvent(isEvent).topicId(topicId).theDate(LocalDateTime.parse(theDate)).spaceId(spaceId).build();
+            ReportReq report = ReportReq.builder().name(name).description(description).isEvent(isEvent).topicId(topicId).theDate(LocalDateTime.parse(theDate)).spaceId(spaceId).objectId(objectId).build();
             ReportRes updatedReport = reportService.updateReport(id, report, image, token);
             return ResponseEntity.ok(updatedReport);
         } catch (IOException e) {
@@ -94,7 +96,7 @@ public class ReportController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of latest reports")
     public ResponseEntity<List<ReportRes>> getLatestReports(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
         token = token.substring(7);
-        List<ReportRes> reports = reportService.getLastReports(token).get();
+        List<ReportRes> reports = reportService.getLastReports(token);
         return ResponseEntity.ok(reports);
     }
 

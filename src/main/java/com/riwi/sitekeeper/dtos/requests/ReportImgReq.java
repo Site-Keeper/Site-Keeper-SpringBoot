@@ -33,4 +33,6 @@ public class ReportImgReq {
 
     @NotBlank(message = "Space is required")
     private Long spaceId;
+
+    private Long objectId;
 }
