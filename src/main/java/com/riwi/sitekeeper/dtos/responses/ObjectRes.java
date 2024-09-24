@@ -18,4 +18,6 @@ public class ObjectRes {
 
     private Long spaceId;
 
+    private String spaceName;
+
 }

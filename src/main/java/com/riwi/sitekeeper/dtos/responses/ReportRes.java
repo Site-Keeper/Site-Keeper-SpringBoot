@@ -29,4 +29,6 @@ public class ReportRes {
     private LocalDateTime theDate;
 
     private Long spaceId;
+
+    private String spaceName;
 }

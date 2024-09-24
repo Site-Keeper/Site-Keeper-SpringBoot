@@ -38,12 +38,14 @@ public class TransformUtil {
     }
 
     public LostObjectsRes convertToLostObjectsRes(LostObjectsEntity lostObjectsEntity) {
+        System.out.println(lostObjectsEntity.getSpaceId());
         return LostObjectsRes.builder()
                 .id(lostObjectsEntity.getId())
                 .name(lostObjectsEntity.getName())
                 .description(lostObjectsEntity.getDescription())
                 .image(lostObjectsEntity.getImage())
                 .spaceId(lostObjectsEntity.getSpaceId().getId())
+                .spaceName(lostObjectsEntity.getSpaceId().getName())
                 .location(lostObjectsEntity.getSpaceId().getLocation())
                 .status(lostObjectsEntity.getStatus())
                 .build();
@@ -72,6 +74,7 @@ public class TransformUtil {
                 .description(objectEntity.getDescription())
                 .image(objectEntity.getImage())
                 .spaceId(objectEntity.getSpaceId().getId())
+                .spaceName(objectEntity.getSpaceId().getName())
                 .build();
     }
 
@@ -107,6 +110,7 @@ public class TransformUtil {
                 .theDate(reportEntity.getTheDate())
                 .status(reportEntity.getStatus())
                 .spaceId(reportEntity.getSpaceId().getId())
+                .spaceName(reportEntity.getSpaceId().getName())
                 .build();
     }
 
