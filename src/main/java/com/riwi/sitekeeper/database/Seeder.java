@@ -1,8 +1,16 @@
 package com.riwi.sitekeeper.database;
 
-import com.riwi.sitekeeper.dtos.requests.ObjectReq;
+import com.riwi.sitekeeper.dtos.requests.LostObjectSeederReq;
+import com.riwi.sitekeeper.dtos.requests.ObjectSeederReq;
+import com.riwi.sitekeeper.dtos.requests.ReportImgReq;
+import com.riwi.sitekeeper.dtos.requests.ReportSeederReq;
+import com.riwi.sitekeeper.entities.LostObjectsEntity;
 import com.riwi.sitekeeper.entities.SpaceEntity;
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
+import com.riwi.sitekeeper.enums.ReportStatus;
+import com.riwi.sitekeeper.repositories.LostObjectsRepository;
 import com.riwi.sitekeeper.repositories.ObjectRepository;
+import com.riwi.sitekeeper.repositories.ReportRepository;
 import com.riwi.sitekeeper.repositories.SpaceRepository;
 import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +18,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 @Component
@@ -20,15 +29,24 @@ public class Seeder {
     public SpaceRepository spaceRepository;
     //Object Repository to insert data into db
     public ObjectRepository objectRepository;
+    //Report Repository to insert data into db
+    public ReportRepository reportRepository;
+    //Lost objects Repository to inject into db
+    public LostObjectsRepository lostObjectsRepository;
+    //TransformUtil to make injection effective
     public TransformUtil transformUtil;
     @Autowired
     public Seeder (
             SpaceRepository spaceRepository,
             ObjectRepository objectRepository,
+            ReportRepository reportRepository,
+            LostObjectsRepository lostObjectsRepository,
             TransformUtil transformUtil){
         this.spaceRepository = spaceRepository;
         this.objectRepository = objectRepository;
         this.transformUtil = transformUtil;
+        this.reportRepository = reportRepository;
+        this.lostObjectsRepository = lostObjectsRepository;
     }
 
     private void seedSpacesTable(){
@@ -121,49 +139,134 @@ public class Seeder {
     }
     private void seedObjectTable(){
         try {
-            ObjectReq seed1 = new ObjectReq();
+            ObjectSeederReq seed1 = new ObjectSeederReq();
             seed1.setName("Silla Ergonómica");
             seed1.setDescription("Silla egonómica marca MUMA");
             seed1.setImage("EventSeatOutlinedIcon");
+            seed1.setCreatedBy(1l);
+            seed1.setUpdatedBy(1l);
             seed1.setSpaceId(7l);
 
-            ObjectReq seed2 = new ObjectReq();
+            ObjectSeederReq seed2 = new ObjectSeederReq();
             seed2.setName("PC");
             seed2.setDescription("PC marca Compumax");
             seed2.setImage("ComputerOutlinedIcon");
+            seed2.setCreatedBy(1l);
+            seed2.setUpdatedBy(1l);
             seed2.setSpaceId(8l);
 
-            ObjectReq seed3 = new ObjectReq();
+            ObjectSeederReq seed3 = new ObjectSeederReq();
             seed3.setName("Silla Ergonómica");
             seed3.setDescription("Silla egonómica marca MUMA");
             seed3.setImage("EventSeatOutlinedIcon");
+            seed3.setCreatedBy(1l);
+            seed3.setUpdatedBy(1l);
             seed3.setSpaceId(8l);
 
-            ObjectReq seed4 = new ObjectReq();
+            ObjectSeederReq seed4 = new ObjectSeederReq();
             seed4.setName("PC");
             seed4.setDescription("PC marca Compumax");
             seed4.setImage("ComputerOutlinedIcon");
+            seed4.setCreatedBy(1l);
+            seed4.setUpdatedBy(1l);
             seed4.setSpaceId(8l);
 
-            ObjectReq seed5 = new ObjectReq();
+            ObjectSeederReq seed5 = new ObjectSeederReq();
             seed5.setName("TV");
             seed5.setDescription("Televisor 55'");
             seed5.setImage("LiveTvOutlinedIcon");
+            seed5.setCreatedBy(1l);
+            seed5.setUpdatedBy(1l);
             seed5.setSpaceId(8l);
 
-            objectRepository.save(transformUtil.convertToObjectEntity(seed1));
-            objectRepository.save(transformUtil.convertToObjectEntity(seed2));
-            objectRepository.save(transformUtil.convertToObjectEntity(seed3));
-            objectRepository.save(transformUtil.convertToObjectEntity(seed4));
-            objectRepository.save(transformUtil.convertToObjectEntity(seed5));
+            objectRepository.save(transformUtil.convertToObjectEntitySeeder(seed1));
+            objectRepository.save(transformUtil.convertToObjectEntitySeeder(seed2));
+            objectRepository.save(transformUtil.convertToObjectEntitySeeder(seed3));
+            objectRepository.save(transformUtil.convertToObjectEntitySeeder(seed4));
+            objectRepository.save(transformUtil.convertToObjectEntitySeeder(seed5));
         }catch (Exception e){
-            logger.warning("Objects Seeding not required");
+            logger.warning("Objects Seeding not required" + e);
         }
     }
 
+    private void seedReportsTable(){
+        try {
+            ReportSeederReq seed1 = new ReportSeederReq();
+            seed1.setName("Limpieza");
+            seed1.setDescription("Jugo de mango regado en el piso");
+            seed1.setTopicId(1L);
+            seed1.setIsEvent(false);
+            seed1.setTheDate(LocalDateTime.now());
+            seed1.setSpaceId(6l);
+            seed1.setCreatedBy(1l);
+            seed1.setUpdatedBy(1l);
+            seed1.setStatus(ReportStatus.PENDING);
+
+
+            ReportSeederReq seed2 = new ReportSeederReq();
+            seed2.setName("Reguero de café");
+            seed2.setDescription("Requero de Café en el piso");
+            seed2.setTopicId(1l);
+            seed2.setIsEvent(false);
+            seed2.setTheDate(LocalDateTime.now());
+            seed2.setSpaceId(2l);
+            seed2.setCreatedBy(1l);
+            seed2.setUpdatedBy(1l);
+            seed2.setStatus(ReportStatus.PENDING);
+
+            ReportSeederReq seed3 = new ReportSeederReq();
+            seed3.setName("PC sin MySql");
+            seed3.setDescription("pc #10 sin funcionamiento correcto de MySql workbench");
+            seed3.setTopicId(2l);
+            seed3.setIsEvent(false);
+            seed3.setTheDate(LocalDateTime.now());
+            seed3.setSpaceId(4l);
+            seed3.setCreatedBy(1l);
+            seed3.setUpdatedBy(1l);
+            seed3.setStatus(ReportStatus.COMPLETED);
+
+            ReportSeederReq seed4 = new ReportSeederReq();
+            seed4.setName("Conferencia Java");
+            seed4.setDescription("Conferencia Java en Review 2");
+            seed4.setTopicId(3l);
+            seed4.setIsEvent(true);
+            seed4.setTheDate(LocalDateTime.now());
+            seed4.setSpaceId(8l);
+            seed4.setCreatedBy(1l);
+            seed4.setUpdatedBy(1l);
+            seed4.setStatus(ReportStatus.CANCELLED);
+
+
+            reportRepository.save(transformUtil.convertToReportEntitySeeder(seed1));
+            reportRepository.save(transformUtil.convertToReportEntitySeeder(seed2));
+            reportRepository.save(transformUtil.convertToReportEntitySeeder(seed3));
+            reportRepository.save(transformUtil.convertToReportEntitySeeder(seed4));
+        }catch (Exception e){
+            logger.warning("Reports Seeding not required" + e);
+        }
+    }
+
+    private void seedLostObjectsTable(){
+        try {
+            LostObjectSeederReq seed1 = new LostObjectSeederReq();
+            seed1.setId(1l);
+            seed1.setName("Audifonos inalambricos");
+            seed1.setDescription("Audifonos inalambricos color negro");
+            seed1.setImage("https://res.cloudinary.com/djmqgrcci/image/upload/v1727234276/fghzubrped4mqtikfgvn.jpg");
+            seed1.setCreatedBy(1l);
+            seed1.setUpdatedBy(1l);
+            seed1.setStatus(LostObjectsStatus.PERDIDO);
+            seed1.setSpaceId(3l);
+            lostObjectsRepository.save(transformUtil.convertToLostObjectEntitySeeder(seed1));
+        } catch (Exception e) {
+            logger.warning("Objects Seeding not required" + e);
+        }
+    }
     @EventListener
     public void seed (ContextRefreshedEvent event){
         seedSpacesTable();
         seedObjectTable();
+        seedReportsTable();
+        seedLostObjectsTable();
     }
 }
