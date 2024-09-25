@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -137,12 +134,16 @@ public class ReportService {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            TopicRes topic = getTopic(report.getTopicId(), token);
             ReportRes reportRes = transformUtil.convertToReportRes(report);
-            reportRes.setTopicName(topic.getName());
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
             reportResList.add(reportRes);
         }
         return reportResList;
@@ -152,12 +153,16 @@ public class ReportService {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
         List<ReportEntity> reports = reportRepository.findAllByTopicIdAndIsDeletedFalse(id);
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            TopicRes topic = getTopic(report.getTopicId(), token);
             ReportRes reportRes = transformUtil.convertToReportRes(report);
-            reportRes.setTopicName(topic.getName());
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
             reportResList.add(reportRes);
         }
         return reportResList;
@@ -167,12 +172,16 @@ public class ReportService {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
         List<ReportEntity> reports = reportRepository.findAllByIsEventAndIsDeletedFalse(isEvent);
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            TopicRes topic = getTopic(report.getTopicId(), token);
             ReportRes reportRes = transformUtil.convertToReportRes(report);
-            reportRes.setTopicName(topic.getName());
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
             reportResList.add(reportRes);
         }
         return reportResList;
@@ -182,12 +191,16 @@ public class ReportService {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
         List<ReportEntity> reports = reportRepository.findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            TopicRes topic = getTopic(report.getTopicId(), token);
             ReportRes reportRes = transformUtil.convertToReportRes(report);
-            reportRes.setTopicName(topic.getName());
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
             reportResList.add(reportRes);
         }
         return reportResList;
