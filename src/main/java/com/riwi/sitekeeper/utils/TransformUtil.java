@@ -159,4 +159,41 @@ public class TransformUtil {
         existingSpace.setLocation(updatedSpace.getLocation());
         existingSpace.setDescription(updatedSpace.getDescription());
     }
+
+    public ObjectEntity convertToObjectEntitySeeder(ObjectSeederReq objectSeederReq) {
+        ObjectEntity objectEntity = new ObjectEntity();
+        objectEntity.setName(objectSeederReq.getName());
+        objectEntity.setDescription(objectSeederReq.getDescription());
+        objectEntity.setImage(objectSeederReq.getImage());
+        objectEntity.setSpaceId(spaceService.getSpaceById(objectSeederReq.getSpaceId()).get());
+        objectEntity.setCreatedBy(objectSeederReq.getCreatedBy());
+        objectEntity.setUpdatedBy(objectSeederReq.getUpdatedBy());
+        return objectEntity;
+    }
+
+    public ReportEntity convertToReportEntitySeeder(ReportSeederReq reportSeederReq) {
+        ReportEntity reportEntity = new ReportEntity();
+        reportEntity.setName(reportSeederReq.getName());
+        reportEntity.setDescription(reportSeederReq.getDescription());
+        reportEntity.setImage(reportSeederReq.getImage());
+        reportEntity.setIsEvent(reportSeederReq.getIsEvent());
+        reportEntity.setSpaceId(spaceService.getSpaceById(reportSeederReq.getSpaceId()).get());
+        reportEntity.setTheDate(reportSeederReq.getTheDate());
+        reportEntity.setUpdatedBy(reportSeederReq.getUpdatedBy());
+        reportEntity.setCreatedBy(reportSeederReq.getCreatedBy());
+        reportEntity.setStatus(reportSeederReq.getStatus());
+        reportEntity.setTopicId(reportSeederReq.getTopicId());
+        return reportEntity;
+    }
+    public LostObjectsEntity convertToLostObjectEntitySeeder(LostObjectSeederReq lostObjectSeederReq) {
+        LostObjectsEntity lostObjectEntity = new LostObjectsEntity();
+        lostObjectEntity.setName(lostObjectSeederReq.getName());
+        lostObjectEntity.setDescription(lostObjectSeederReq.getDescription());
+        lostObjectEntity.setImage(lostObjectSeederReq.getImage());
+        lostObjectEntity.setCreatedBy(lostObjectSeederReq.getCreatedBy());
+        lostObjectEntity.setUpdatedBy(lostObjectSeederReq.getUpdatedBy());
+        lostObjectEntity.setSpaceId(spaceService.getSpaceById(lostObjectSeederReq.getSpaceId()).get());
+        lostObjectEntity.setStatus(lostObjectSeederReq.getStatus());
+        return lostObjectEntity;
+    }
 }

@@ -182,8 +182,8 @@ public class ReportService {
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         long total = reportRepository.count();
-        long approvedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.APPROVED);
-        long rejectedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.REJECTED);
+        long approvedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.COMPLETED);
+        long rejectedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.CANCELLED);
         ReportSummaryRes reportSummaryRes = new ReportSummaryRes();
         reportSummaryRes.setTotal(total);
         reportSummaryRes.setApprovedTotal(approvedTotal);
