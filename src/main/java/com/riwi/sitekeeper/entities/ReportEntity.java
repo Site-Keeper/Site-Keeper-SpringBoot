@@ -50,4 +50,7 @@ public class ReportEntity extends Auditable {
     @JoinColumn(name = "space_id",nullable = false)
     private SpaceEntity spaceId;
 
+    //Seeder params
+    //private Long createdBy;
+    private Long updatedBy;
 }
