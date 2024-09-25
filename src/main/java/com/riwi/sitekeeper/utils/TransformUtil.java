@@ -103,7 +103,8 @@ public class TransformUtil {
     }
 
     public ReportRes convertToReportRes(ReportEntity reportEntity) {
-        return ReportRes.builder()
+
+        ReportRes reportRes = ReportRes.builder()
                 .id(reportEntity.getId())
                 .name(reportEntity.getName())
                 .description(reportEntity.getDescription())
@@ -114,9 +115,14 @@ public class TransformUtil {
                 .status(reportEntity.getStatus())
                 .spaceId(reportEntity.getSpaceId().getId())
                 .spaceName(reportEntity.getSpaceId().getName())
-                .objectId(reportEntity.getObjectId().getId())
-                .objectName(reportEntity.getObjectId().getName())
                 .build();
+
+        if (reportEntity.getObjectId() != null) {
+            reportRes.setObjectName(reportEntity.getObjectId().getName());
+            reportRes.setObjectId(reportEntity.getObjectId().getId());
+        }
+
+        return reportRes;
     }
 
     public void updateReportEntity(ReportEntity existingReport, ReportImgReq updatedReport) {
