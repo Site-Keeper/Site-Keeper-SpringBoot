@@ -57,6 +57,10 @@ public class ObjectService {
         return Optional.of(transformUtil.convertToObjectRes(objectOptional));
     }
 
+    public Optional<ObjectEntity> getObjectById(Long id) {
+        return objectRepository.findById(id);
+    }
+
     public Optional<ObjectRes> getObjectByName(String name, String token) {
         ValidationReq validationReq = new ValidationReq("objects", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);

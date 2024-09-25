@@ -1,5 +1,6 @@
 package com.riwi.sitekeeper.utils;
 
+import com.riwi.sitekeeper.clients.NestServiceClient;
 import com.riwi.sitekeeper.dtos.requests.*;
 import com.riwi.sitekeeper.dtos.responses.LostObjectsRes;
 import com.riwi.sitekeeper.dtos.responses.ObjectRes;
@@ -11,6 +12,8 @@ import com.riwi.sitekeeper.entities.ReportEntity;
 import com.riwi.sitekeeper.entities.SpaceEntity;
 import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import com.riwi.sitekeeper.enums.ReportStatus;
+import com.riwi.sitekeeper.exceptions.general.NotFoundException;
+import com.riwi.sitekeeper.services.ObjectService;
 import com.riwi.sitekeeper.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,7 +35,7 @@ public class TransformUtil {
                 .name(lostObjectsReq.getName())
                 .description(lostObjectsReq.getDescription())
                 .image(lostObjectsReq.getImage())
-                .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).get())
+                .spaceId(spaceService.getSpaceById(lostObjectsReq.getSpaceId()).orElseThrow(()-> new NotFoundException("Space could not be found by id")))
                 .status(LostObjectsStatus.PERDIDO)
                 .build();
     }
@@ -55,7 +58,7 @@ public class TransformUtil {
         existingLostObjects.setName(updatedLostObjects.getName());
         existingLostObjects.setDescription(updatedLostObjects.getDescription());
         existingLostObjects.setImage(updatedLostObjects.getImage());
-        existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).get());
+        existingLostObjects.setSpaceId(spaceService.getSpaceById(updatedLostObjects.getSpaceId()).orElseThrow(()-> new NotFoundException("Space could not be found by id")));
     }
 
     public ObjectEntity convertToObjectEntity(ObjectReq objectReq) {
@@ -63,7 +66,7 @@ public class TransformUtil {
                 .name(objectReq.getName())
                 .description(objectReq.getDescription())
                 .image(objectReq.getImage())
-                .spaceId(spaceService.getSpaceById(objectReq.getSpaceId()).get())
+                .spaceId(spaceService.getSpaceById(objectReq.getSpaceId()).orElseThrow(()-> new NotFoundException("Space could not be found by id")))
                 .build();
     }
 
@@ -94,7 +97,7 @@ public class TransformUtil {
                 .image(reportImgReq.getImage())
                 .topicId(reportImgReq.getTopicId())
                 .theDate(reportImgReq.getTheDate())
-                .spaceId(spaceService.getSpaceById(reportImgReq.getSpaceId()).get())
+                .spaceId(spaceService.getSpaceById(reportImgReq.getSpaceId()).orElseThrow(()-> new NotFoundException("Space could not be found by id")))
                 .status(ReportStatus.PENDING)
                 .build();
     }
@@ -111,6 +114,8 @@ public class TransformUtil {
                 .status(reportEntity.getStatus())
                 .spaceId(reportEntity.getSpaceId().getId())
                 .spaceName(reportEntity.getSpaceId().getName())
+                .objectId(reportEntity.getObjectId().getId())
+                .objectName(reportEntity.getObjectId().getName())
                 .build();
     }
 
@@ -120,7 +125,7 @@ public class TransformUtil {
         existingReport.setIsEvent(updatedReport.getIsEvent());
         existingReport.setTopicId(updatedReport.getTopicId());
         existingReport.setTheDate(updatedReport.getTheDate());
-        existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).get());
+        existingReport.setSpaceId(spaceService.getSpaceById(updatedReport.getSpaceId()).orElseThrow(()-> new NotFoundException("Space could not be found by id")));
     }
 
 

@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.riwi.sitekeeper.clients.NestServiceClient;
 import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
+import com.riwi.sitekeeper.dtos.nest.responses.TopicRes;
 import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
 import com.riwi.sitekeeper.dtos.requests.ReportImgReq;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
@@ -36,6 +37,9 @@ public class ReportService {
     private SpaceService spaceService;
 
     @Autowired
+    private ObjectService objectService;
+
+    @Autowired
     private NestServiceClient nestServiceClient;
 
     @Autowired
@@ -47,6 +51,88 @@ public class ReportService {
         this.transformUtil = transformUtil;
     }
 
+
+    public ReportRes createReport(ReportReq report, MultipartFile image, String token) throws IOException {
+        try{
+            ValidationReq validationReq = new ValidationReq("reports", "can_create");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+            String imageUrl;
+
+            ReportImgReq reportImgReq = ReportImgReq.builder()
+                    .name(report.getName())
+                    .description(report.getDescription())
+                    .isEvent(report.getIsEvent())
+                    .topicId(report.getTopicId())
+                    .theDate(report.getTheDate())
+                    .spaceId(report.getSpaceId())
+                    .objectId(report.getObjectId())
+                    .build();
+
+
+            if (image != null) {
+
+                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                imageUrl = (String) uploadResult.get("url");
+                reportImgReq.setImage(imageUrl);
+            }
+
+            System.out.println("reportImgReq = " + reportImgReq);
+
+            ReportEntity newReport = transformUtil.convertToReportEntity(reportImgReq);
+
+            newReport.setObjectId(
+                    reportImgReq.getObjectId() != null
+                            ? objectService.getObjectById(reportImgReq.getObjectId()).orElseThrow(() -> new NotFoundException("Object could not be found by id"))
+                            : null
+            );
+            newReport.setCreatedBy(user.getId());
+            newReport.setUpdatedBy(user.getId());
+            ReportEntity savedReport = reportRepository.save(newReport);
+            return transformUtil.convertToReportRes(savedReport);
+        }catch (UnauthorizedActionException e){
+            throw new UnauthorizedActionException("User does not have permission to create reports");
+        }
+    }
+
+    public ReportRes updateReport(Long id, ReportReq updatedReport, MultipartFile image, String token) throws IOException {
+        try{
+            ValidationReq validationReq = new ValidationReq("reports", "can_update");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+            Optional<ReportEntity> existingReportOptional = reportRepository.findById(id);
+            String imageUrl;
+
+            ReportImgReq reportImgReq = ReportImgReq.builder()
+                    .name(updatedReport.getName())
+                    .description(updatedReport.getDescription())
+                    .isEvent(updatedReport.getIsEvent())
+                    .topicId(updatedReport.getTopicId())
+                    .theDate(updatedReport.getTheDate())
+                    .spaceId(updatedReport.getSpaceId())
+                    .objectId(updatedReport.getObjectId())
+                    .build();
+
+            if (existingReportOptional.isPresent()) {
+                ReportEntity existingReport = existingReportOptional.get();
+
+                if (image != null) {
+                    Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                    imageUrl = (String) uploadResult.get("url");
+                    existingReport.setImage(imageUrl);
+                }
+
+                transformUtil.updateReportEntity(existingReport, reportImgReq);
+                ReportEntity savedReport = reportRepository.save(existingReport);
+                return transformUtil.convertToReportRes(savedReport);
+            } else {
+                throw new RuntimeException("Report not found with id: " + id);
+            }
+        }catch (UnauthorizedActionException e){
+            throw new UnauthorizedActionException("User does not have permission to update reports");
+        }
+    }
+
     public List<ReportRes> getAllReports(String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
@@ -54,21 +140,27 @@ public class ReportService {
         List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            reportResList.add(transformUtil.convertToReportRes(report));
+            TopicRes topic = getTopic(report.getTopicId(), token);
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topic.getName());
+            reportResList.add(reportRes);
         }
         return reportResList;
     }
 
-    public Optional<List<ReportRes>> getLastReports(String token) {
+    public List<ReportRes> getLastReports(String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         List<ReportEntity> reports = reportRepository.findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
         List<ReportRes> reportResList = new ArrayList<>();
         for (ReportEntity report : reports) {
-            reportResList.add(transformUtil.convertToReportRes(report));
+            TopicRes topic = getTopic(report.getTopicId(), token);
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topic.getName());
+            reportResList.add(reportRes);
         }
-        return Optional.of(reportResList);
+        return reportResList;
 
     }
 
@@ -78,7 +170,11 @@ public class ReportService {
 
         ReportEntity reportOptional = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Report could not be found by id"));
 
-        return Optional.of(transformUtil.convertToReportRes(reportOptional));
+        TopicRes topic = getTopic(reportOptional.getTopicId(), token);
+        ReportRes reportRes = transformUtil.convertToReportRes(reportOptional);
+        reportRes.setTopicName(topic.getName());
+
+        return Optional.of(reportRes);
     }
 
     public ReportSummaryRes getReportSummary(String token) {
@@ -95,80 +191,6 @@ public class ReportService {
         return reportSummaryRes;
     }
 
-    public ReportRes createReport(ReportReq report, MultipartFile image, String token) throws IOException {
-        try{
-            ValidationReq validationReq = new ValidationReq("reports", "can_create");
-            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-
-            String imageUrl;
-
-            ReportImgReq reportImgReq = ReportImgReq.builder()
-                    .name(report.getName())
-                    .description(report.getDescription())
-                    .isEvent(report.getIsEvent())
-                    .topicId(report.getTopicId())
-                    .theDate(report.getTheDate())
-                    .spaceId(report.getSpaceId())
-                    .build();
-
-
-            if (image != null) {
-
-                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-                imageUrl = (String) uploadResult.get("url");
-                reportImgReq.setImage(imageUrl);
-            }
-
-            System.out.println("reportImgReq = " + reportImgReq);
-
-            ReportEntity newReport = transformUtil.convertToReportEntity(reportImgReq);
-
-            newReport.setCreatedBy(user.getId());
-            newReport.setUpdatedBy(user.getId());
-            ReportEntity savedReport = reportRepository.save(newReport);
-            return transformUtil.convertToReportRes(savedReport);
-        }catch (UnauthorizedActionException e){
-            throw new UnauthorizedActionException("User does not have permission to create reports");
-        }
-    }
-
-    public ReportRes updateReport(Long id, ReportReq updatedReport, MultipartFile image, String token) throws IOException {
-        try{
-        ValidationReq validationReq = new ValidationReq("reports", "can_update");
-        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
-
-        Optional<ReportEntity> existingReportOptional = reportRepository.findById(id);
-        String imageUrl;
-
-        ReportImgReq reportImgReq = ReportImgReq.builder()
-                .name(updatedReport.getName())
-                .description(updatedReport.getDescription())
-                .isEvent(updatedReport.getIsEvent())
-                .topicId(updatedReport.getTopicId())
-                .theDate(updatedReport.getTheDate())
-                .spaceId(updatedReport.getSpaceId())
-                .build();
-
-        if (existingReportOptional.isPresent()) {
-            ReportEntity existingReport = existingReportOptional.get();
-
-            if (image != null) {
-                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-                imageUrl = (String) uploadResult.get("url");
-                existingReport.setImage(imageUrl);
-            }
-
-            transformUtil.updateReportEntity(existingReport, reportImgReq);
-            ReportEntity savedReport = reportRepository.save(existingReport);
-            return transformUtil.convertToReportRes(savedReport);
-        } else {
-            throw new RuntimeException("Report not found with id: " + id);
-        }
-        }catch (UnauthorizedActionException e){
-            throw new UnauthorizedActionException("User does not have permission to update reports");
-        }
-    }
-
     public ReportRes updateStatus(Long id, ReportStatus newStatus, String token){
         ValidationReq validationReq = new ValidationReq("reports", "can_update");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
@@ -182,5 +204,9 @@ public class ReportService {
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
         reportRepository.softDeleteById(id);
+    }
+
+    private TopicRes getTopic(Long topicId, String token) {
+        return nestServiceClient.getTopicById(topicId, token);
     }
 }

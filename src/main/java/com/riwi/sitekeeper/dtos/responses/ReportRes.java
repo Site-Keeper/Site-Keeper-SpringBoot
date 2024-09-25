@@ -24,6 +24,8 @@ public class ReportRes {
 
     private Long topicId;
 
+    private String topicName;
+
     private ReportStatus status;
 
     private LocalDateTime theDate;
@@ -31,4 +33,8 @@ public class ReportRes {
     private Long spaceId;
 
     private String spaceName;
+
+    private Long objectId;
+
+    private String objectName;
 }
