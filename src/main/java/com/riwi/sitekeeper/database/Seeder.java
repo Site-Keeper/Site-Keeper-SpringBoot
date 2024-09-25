@@ -63,7 +63,7 @@ public class Seeder {
             SpaceEntity seed2 = new SpaceEntity();
             seed2.setId(3l);
             seed2.setName("Entrada 1");
-            seed2.setLocation("Piso 3 - Ala Occidental - Después de los torniquetes");
+            seed2.setLocation("Piso 3 - Ala Occidental");
             seed2.setDescription("Zona de esparcimiento donde se pueden apreciar las alianzas de RIWI");
             seed2.setCreatedBy(1l);
             seed2.setUpdatedBy(1l);
@@ -72,7 +72,7 @@ public class Seeder {
             SpaceEntity seed3 = new SpaceEntity();
             seed3.setId(4l);
             seed3.setName("Entrada 2");
-            seed3.setLocation("Piso 3 - Ala Occidental - en medio de la entrada y zona de review");
+            seed3.setLocation("Piso 3 - Ala Occidental");
             seed3.setDescription("Zona de esparcimiento");
             seed3.setCreatedBy(1l);
             seed3.setUpdatedBy(1l);
@@ -81,7 +81,7 @@ public class Seeder {
             SpaceEntity seed4 = new SpaceEntity();
             seed4.setId(5l);
             seed4.setName("Cubo Azul 1");
-            seed4.setLocation("Piso 3 - Ala Occidental - en medio de la entrada y zona de review");
+            seed4.setLocation("Piso 3 - Ala Occidental");
             seed4.setDescription("Zona de trabajo insonorizada para mayor concentración");
             seed4.setCreatedBy(1l);
             seed4.setUpdatedBy(1l);
@@ -90,7 +90,7 @@ public class Seeder {
             SpaceEntity seed5 = new SpaceEntity();
             seed5.setId(6l);
             seed5.setName("Cubo Azul 2");
-            seed5.setLocation("Piso 3 - Ala Occidental - en medio de la entrada y zona de review en el lado opuesto del cubo azul 1");
+            seed5.setLocation("Piso 3 - Ala Occidental");
             seed5.setDescription("Zona de trabajo insonorizada para mayor concentración");
             seed5.setCreatedBy(1l);
             seed5.setUpdatedBy(1l);
@@ -99,7 +99,7 @@ public class Seeder {
             SpaceEntity seed6 = new SpaceEntity();
             seed6.setId(7l);
             seed6.setName("Review 1");
-            seed6.setLocation("Piso 3 - Ala Occidental - Justo detras de los cubos azules");
+            seed6.setLocation("Piso 3 - Ala Occidental ");
             seed6.setDescription("Zona Para coders");
             seed6.setCreatedBy(1l);
             seed6.setUpdatedBy(1l);
@@ -108,7 +108,7 @@ public class Seeder {
             SpaceEntity seed7 = new SpaceEntity();
             seed7.setId(8l);
             seed7.setName("Review 2");
-            seed7.setLocation("Piso 3 - Ala Occidental - Al lado del Review 1");
+            seed7.setLocation("Piso 3 - Ala Occidental");
             seed7.setDescription("Zona para coders");
             seed7.setCreatedBy(1l);
             seed7.setUpdatedBy(1l);
