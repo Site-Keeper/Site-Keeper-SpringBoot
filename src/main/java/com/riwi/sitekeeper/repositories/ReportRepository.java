@@ -15,4 +15,8 @@ public interface ReportRepository extends BaseRepository<ReportEntity> {
 
     List<ReportEntity> findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
 
+    List<ReportEntity> findAllByTopicIdAndIsDeletedFalse(Long topicId);
+
+    List<ReportEntity> findAllByIsEventAndIsDeletedFalse(Boolean isEvent);
+
 }

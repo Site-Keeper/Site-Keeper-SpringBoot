@@ -148,6 +148,36 @@ public class ReportService {
         return reportResList;
     }
 
+    public List<ReportRes> getReportsByTopicId(Long id, String token){
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<ReportEntity> reports = reportRepository.findAllByTopicIdAndIsDeletedFalse(id);
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            TopicRes topic = getTopic(report.getTopicId(), token);
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topic.getName());
+            reportResList.add(reportRes);
+        }
+        return reportResList;
+    }
+
+    public List<ReportRes> getReportsByIsEvent(Boolean isEvent, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<ReportEntity> reports = reportRepository.findAllByIsEventAndIsDeletedFalse(isEvent);
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            TopicRes topic = getTopic(report.getTopicId(), token);
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topic.getName());
+            reportResList.add(reportRes);
+        }
+        return reportResList;
+    }
+
     public List<ReportRes> getLastReports(String token) {
         ValidationReq validationReq = new ValidationReq("reports", "can_read");
         ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);

@@ -91,6 +91,24 @@ public class ReportController {
         return ResponseEntity.ok(reports);
     }
 
+    @GetMapping("/topic/{id}")
+    @Operation(summary = "Get reports by topic id", description = "Retrieves a list of reports by topic id")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of reports")
+    public ResponseEntity<List<ReportRes>> getReportsByTopicId(@PathVariable Long id, @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        List<ReportRes> reports = reportService.getReportsByTopicId(id, token);
+        return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/is-event/{isEvent}")
+    @Operation(summary = "Get reports by isEvent", description = "Retrieves a list of reports by isEvent")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of reports")
+    public ResponseEntity<List<ReportRes>> getReportsByIsEvent(@PathVariable Boolean isEvent, @Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        List<ReportRes> reports = reportService.getReportsByIsEvent(isEvent, token);
+        return ResponseEntity.ok(reports);
+    }
+
     @GetMapping("/last")
     @Operation(summary = "Get latest reports", description = "Retrieves the latest reports")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of latest reports")
