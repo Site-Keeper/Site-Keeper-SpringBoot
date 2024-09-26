@@ -1,15 +1,28 @@
 package com.riwi.sitekeeper.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.riwi.sitekeeper.clients.NestServiceClient;
+import com.riwi.sitekeeper.dtos.nest.requests.ValidationReq;
+import com.riwi.sitekeeper.dtos.nest.responses.TopicRes;
+import com.riwi.sitekeeper.dtos.nest.responses.ValidationUserRes;
+import com.riwi.sitekeeper.dtos.requests.ReportImgReq;
 import com.riwi.sitekeeper.dtos.requests.ReportReq;
 import com.riwi.sitekeeper.dtos.responses.ReportRes;
-import com.riwi.sitekeeper.entitites.ReportEntity;
+import com.riwi.sitekeeper.dtos.responses.ReportSummaryRes;
+import com.riwi.sitekeeper.entities.ReportEntity;
+import com.riwi.sitekeeper.enums.ReportStatus;
+import com.riwi.sitekeeper.exceptions.general.InvalidFileException;
+import com.riwi.sitekeeper.exceptions.general.NotFoundException;
+import com.riwi.sitekeeper.exceptions.general.UnauthorizedActionException;
 import com.riwi.sitekeeper.repositories.ReportRepository;
+import com.riwi.sitekeeper.utils.TransformUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -17,73 +30,226 @@ public class ReportService {
     @Autowired
     private ReportRepository reportRepository;
 
-    public List<ReportRes> getAllReports() {
-        List<ReportEntity> reports = reportRepository.findAll();
-        return reports.stream()
-                .map(this::convertToReportRes)
-                .collect(Collectors.toList());
+    @Autowired
+    private SpaceService spaceService;
+
+    @Autowired
+    private ObjectService objectService;
+
+    @Autowired
+    private NestServiceClient nestServiceClient;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+    private final TransformUtil transformUtil;
+
+    public ReportService(TransformUtil transformUtil) {
+        this.transformUtil = transformUtil;
     }
 
-    public Optional<ReportRes> getReportById(Long id) {
-        return reportRepository.findById(id)
-                .map(this::convertToReportRes);
-    }
 
-    public ReportRes createReport(ReportReq report) {
-        ReportEntity newReport = convertToReportEntity(report);
-        ReportEntity savedReport = reportRepository.save(newReport);
-        return convertToReportRes(savedReport);
-    }
+    public ReportRes createReport(ReportReq report, MultipartFile image, String token) throws IOException {
+        try{
+            ValidationReq validationReq = new ValidationReq("reports", "can_create");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
 
-    public ReportRes updateReport(Long id, ReportReq updatedReport) {
-        Optional<ReportEntity> existingReportOptional = reportRepository.findById(id);
+            String imageUrl;
 
-        if (existingReportOptional.isPresent()) {
-            ReportEntity existingReport = existingReportOptional.get();
-            updateReportEntity(existingReport, updatedReport);
-            ReportEntity savedReport = reportRepository.save(existingReport);
-            return convertToReportRes(savedReport);
-        } else {
-            throw new RuntimeException("Report not found with id: " + id);
+            ReportImgReq reportImgReq = ReportImgReq.builder()
+                    .name(report.getName())
+                    .description(report.getDescription())
+                    .isEvent(report.getIsEvent())
+                    .topicId(report.getTopicId())
+                    .theDate(report.getTheDate())
+                    .spaceId(report.getSpaceId())
+                    .objectId(report.getObjectId())
+                    .build();
+
+
+            if (image != null) {
+
+                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                imageUrl = (String) uploadResult.get("url");
+                reportImgReq.setImage(imageUrl);
+            }
+
+            System.out.println("reportImgReq = " + reportImgReq);
+
+            ReportEntity newReport = transformUtil.convertToReportEntity(reportImgReq);
+
+            newReport.setObjectId(
+                    reportImgReq.getObjectId() != null
+                            ? objectService.getObjectById(reportImgReq.getObjectId()).orElseThrow(() -> new NotFoundException("Object could not be found by id"))
+                            : null
+            );
+            newReport.setCreatedBy(user.getId());
+            newReport.setUpdatedBy(user.getId());
+            ReportEntity savedReport = reportRepository.save(newReport);
+            return transformUtil.convertToReportRes(savedReport);
+        }catch (UnauthorizedActionException e){
+            throw new UnauthorizedActionException("User does not have permission to create reports");
         }
     }
 
-    public void deleteReport(Long id) {
-        reportRepository.deleteById(id);
+    public ReportRes updateReport(Long id, ReportReq updatedReport, MultipartFile image, String token) throws IOException {
+        try{
+            ValidationReq validationReq = new ValidationReq("reports", "can_update");
+            ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+            Optional<ReportEntity> existingReportOptional = reportRepository.findById(id);
+            String imageUrl;
+
+            ReportImgReq reportImgReq = ReportImgReq.builder()
+                    .name(updatedReport.getName())
+                    .description(updatedReport.getDescription())
+                    .isEvent(updatedReport.getIsEvent())
+                    .topicId(updatedReport.getTopicId())
+                    .theDate(updatedReport.getTheDate())
+                    .spaceId(updatedReport.getSpaceId())
+                    .objectId(updatedReport.getObjectId())
+                    .build();
+
+            if (existingReportOptional.isPresent()) {
+                ReportEntity existingReport = existingReportOptional.get();
+
+                if (image != null) {
+                    Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                    imageUrl = (String) uploadResult.get("url");
+                    existingReport.setImage(imageUrl);
+                }
+
+                transformUtil.updateReportEntity(existingReport, reportImgReq);
+                ReportEntity savedReport = reportRepository.save(existingReport);
+                return transformUtil.convertToReportRes(savedReport);
+            } else {
+                throw new RuntimeException("Report not found with id: " + id);
+            }
+        }catch (UnauthorizedActionException e){
+            throw new UnauthorizedActionException("User does not have permission to update reports");
+        }
     }
 
-    private ReportEntity convertToReportEntity(ReportReq reportReq) {
-        return ReportEntity.builder()
-                .name(reportReq.getName())
-                .description(reportReq.getDescription())
-                .isEvent(reportReq.getIsEvent())
-                .image(reportReq.getImage())
-                .topicId(reportReq.getTopicId())
-                .theDate(reportReq.getTheDate())
-                .spaceId(reportReq.getSpaceId())
-                .build();
+    public List<ReportRes> getAllReports(String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
+        List<ReportEntity> reports = reportRepository.findAllByIsDeletedFalse();
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
+            reportResList.add(reportRes);
+        }
+        return reportResList;
     }
 
-    private ReportRes convertToReportRes(ReportEntity reportEntity) {
-        return ReportRes.builder()
-                .id(reportEntity.getId())
-                .name(reportEntity.getName())
-                .description(reportEntity.getDescription())
-                .isEvent(reportEntity.getIsEvent())
-                .image(reportEntity.getImage())
-                .topicId(reportEntity.getTopicId())
-                .theDate(reportEntity.getTheDate())
-                .spaceId(reportEntity.getSpaceId())
-                .build();
+    public List<ReportRes> getReportsByTopicId(Long id, String token){
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
+        List<ReportEntity> reports = reportRepository.findAllByTopicIdAndIsDeletedFalse(id);
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
+            reportResList.add(reportRes);
+        }
+        return reportResList;
     }
 
-    private void updateReportEntity(ReportEntity existingReport, ReportReq updatedReport) {
-        existingReport.setName(updatedReport.getName());
-        existingReport.setDescription(updatedReport.getDescription());
-        existingReport.setIsEvent(updatedReport.getIsEvent());
-        existingReport.setImage(updatedReport.getImage());
-        existingReport.setTopicId(updatedReport.getTopicId());
-        existingReport.setTheDate(updatedReport.getTheDate());
-        existingReport.setSpaceId(updatedReport.getSpaceId());
+    public List<ReportRes> getReportsByIsEvent(Boolean isEvent, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
+        List<ReportEntity> reports = reportRepository.findAllByIsEventAndIsDeletedFalse(isEvent);
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
+            reportResList.add(reportRes);
+        }
+        return reportResList;
+    }
+
+    public List<ReportRes> getLastReports(String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        List<TopicRes> topics = nestServiceClient.getTopics(token);
+
+        List<ReportEntity> reports = reportRepository.findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
+        List<ReportRes> reportResList = new ArrayList<>();
+        for (ReportEntity report : reports) {
+            ReportRes reportRes = transformUtil.convertToReportRes(report);
+            reportRes.setTopicName(topics.stream()
+                    .filter(topic -> Objects.equals(topic.getId(), report.getTopicId()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Topic with id " + report.getTopicId() + " not found")).getName());
+            reportResList.add(reportRes);
+        }
+        return reportResList;
+
+    }
+
+    public Optional<ReportRes> getReportById(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        ReportEntity reportOptional = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Report could not be found by id"));
+
+        TopicRes topic = getTopic(reportOptional.getTopicId(), token);
+        ReportRes reportRes = transformUtil.convertToReportRes(reportOptional);
+        reportRes.setTopicName(topic.getName());
+
+        return Optional.of(reportRes);
+    }
+
+    public ReportSummaryRes getReportSummary(String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_read");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        long total = reportRepository.count();
+        long approvedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.COMPLETED);
+        long rejectedTotal = reportRepository.countByStatusAndIsDeletedFalse(ReportStatus.CANCELLED);
+        ReportSummaryRes reportSummaryRes = new ReportSummaryRes();
+        reportSummaryRes.setTotal(total);
+        reportSummaryRes.setApprovedTotal(approvedTotal);
+        reportSummaryRes.setRejectedTotal(rejectedTotal);
+        return reportSummaryRes;
+    }
+
+    public ReportRes updateStatus(Long id, ReportStatus newStatus, String token){
+        ValidationReq validationReq = new ValidationReq("reports", "can_update");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+        ReportEntity report = reportRepository.findById(id).orElseThrow(()->new NotFoundException("Report could not be found by id"));
+        report.setStatus(newStatus);
+        reportRepository.save(report);
+        return transformUtil.convertToReportRes(report);
+    }
+    public void deleteReport(Long id, String token) {
+        ValidationReq validationReq = new ValidationReq("reports", "can_delete");
+        ValidationUserRes user = nestServiceClient.checkPermission(validationReq, token);
+
+        reportRepository.softDeleteById(id);
+    }
+
+    private TopicRes getTopic(Long topicId, String token) {
+        return nestServiceClient.getTopicById(topicId, token);
     }
 }

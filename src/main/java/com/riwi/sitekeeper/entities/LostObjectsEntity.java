@@ -1,13 +1,9 @@
-package com.riwi.sitekeeper.entitites;
+package com.riwi.sitekeeper.entities;
 
+import com.riwi.sitekeeper.enums.LostObjectsStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "lost_objects")
@@ -15,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class LostObjectsEntity extends Auditable {
 
@@ -32,8 +28,14 @@ public class LostObjectsEntity extends Auditable {
     @Column(nullable = false)
     private String image;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PERDIDO'")
+    private LostObjectsStatus status = LostObjectsStatus.PERDIDO;
+
+    @Column
+    private Long claimedBy;
+
     @ManyToOne
     @JoinColumn(name = "space_id", nullable = false)
     private SpaceEntity spaceId;
-
 }

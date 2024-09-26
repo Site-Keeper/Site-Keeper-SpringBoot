@@ -1,7 +1,10 @@
 package com.riwi.sitekeeper.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -9,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportReq {
+public class ReportImgReq {
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -23,12 +26,13 @@ public class ReportReq {
     @NotBlank(message = "Topic is required")
     private Long topicId;
 
-    @NotBlank(message = "The Date is required")
     private LocalDateTime theDate;
+
+    @NotBlank(message = "Image is required")
+    private String image;
 
     @NotBlank(message = "Space is required")
     private Long spaceId;
 
     private Long objectId;
-
 }

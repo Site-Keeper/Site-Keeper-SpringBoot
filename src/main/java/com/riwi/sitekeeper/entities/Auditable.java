@@ -1,8 +1,7 @@
-package com.riwi.sitekeeper.entitites;
+package com.riwi.sitekeeper.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -32,6 +31,6 @@ public abstract class Auditable {
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
 }
